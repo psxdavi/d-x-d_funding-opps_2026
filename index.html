@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D x D Research Funding Matrix: Q1 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        themeA: '#10b981', // Emerald – Green/Digital & Sustainability
+                        themeB: '#3b82f6', // Blue – GenAI in Education
+                        themeC: '#8b5cf6', // Violet – Digital Justice
+                        themeD: '#f59e0b', // Amber – Industry & Net Zero
+                        themeE: '#ec4899', // Pink – Talent & Fellowships
+                        lsbu: '#e30613',
+                        dark: '#0f172a'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; }
+        .dark body { background-color: #0f172a; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Active state for Core Focus Area icons */
+        .core-active i { transform: scale(1.2); }
+        .core-active span { color: #fff !important; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+    </style>
+</head>
+<body class="text-slate-800 dark:text-slate-200 transition-colors flex flex-col min-h-screen relative">
+
+<!-- Header -->
+<header class="bg-dark text-white pt-8 pb-12 px-6 relative overflow-hidden">
+    <div class="absolute top-0 right-0 opacity-10 text-9xl transform translate-x-10 -translate-y-10">
+        <i class="fa-solid fa-network-wired"></i>
+    </div>
+    <div class="max-w-7xl mx-auto relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+                <h2 class="text-lsbu font-bold text-sm tracking-widest uppercase mb-2">RESEARCH AWARDS & DEVELOPMENT (RAD)</h2>
+                <h1 class="text-3xl md:text-5xl font-bold mb-2">D x D Research Funding Matrix<br>Q1: 2026</h1>
+                <p class="text-slate-400 text-lg">Focus: 2026 Opportunities & Rolling Deadlines</p>
+            </div>
+            <div class="flex items-center gap-6">
+                <!-- Dark mode toggle -->
+                <button onclick="document.documentElement.classList.toggle('dark')" class="text-white/80 hover:text-white transition" title="Toggle Dark Mode">
+                    <i class="fa-solid fa-circle-half-stroke text-2xl"></i>
+                </button>
+                <!-- Legend / Core Focus Filter -->
+                <div class="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20 hidden md:block">
+                    <p class="text-sm font-semibold text-slate-300 text-center mb-3">Filter by Core Focus Area</p>
+                    <div class="flex justify-center gap-8">
+                        <button onclick="filterByCore('AI')" id="btn-core-AI" class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition">
+                            <i class="fa-solid fa-brain text-themeE text-2xl mb-2 group-hover:scale-110 transition"></i>
+                            <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400 group-hover:text-white transition">AI</span>
+                        </button>
+                        <button onclick="filterByCore('Sust')" id="btn-core-Sust" class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition">
+                            <i class="fa-solid fa-leaf text-themeA text-2xl mb-2 group-hover:scale-110 transition"></i>
+                            <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400 group-hover:text-white transition">Sust.</span>
+                        </button>
+                        <button onclick="filterByCore('Society')" id="btn-core-Society" class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition">
+                            <i class="fa-solid fa-users text-themeC text-2xl mb-2 group-hover:scale-110 transition"></i>
+                            <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400 group-hover:text-white transition">Society</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 -mt-8 relative z-20 pb-20 flex-grow">
+    <!-- Search + Filters + Export -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+            <input type="text" id="search" placeholder="Search titles, funders, keywords…" 
+                   class="w-full md:w-80 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400 dark:placeholder-slate-500"
+                   onkeyup="searchCards()">
+            
+            <div class="flex items-center gap-3">
+                <button onclick="exportCSV()" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition text-slate-600 dark:text-slate-300">
+                    <i class="fa-solid fa-download"></i> CSV
+                </button>
+                <button onclick="exportJSON()" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition text-slate-600 dark:text-slate-300">
+                    <i class="fa-solid fa-file-code"></i> JSON
+                </button>
+            </div>
+        </div>
+
+        <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">Filter by Strategic Theme</h3>
+        <div class="flex flex-wrap gap-2" id="filter-container">
+            <button onclick="filterCards('all')" class="filter-btn active bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all">All Streams</button>
+            <button onclick="filterCards('A')" class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeA hover:text-themeA dark:hover:text-themeA transition-all">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeA group-hover:text-white transition-colors">A</span>Green-Digital & Sust.
+            </button>
+            <button onclick="filterCards('B')" class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeB hover:text-themeB dark:hover:text-themeB transition-all">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeB group-hover:text-white transition-colors">B</span>GenAI in Education
+            </button>
+            <button onclick="filterCards('C')" class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeC hover:text-themeC dark:hover:text-themeC transition-all">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeC group-hover:text-white transition-colors">C</span>Digital Justice
+            </button>
+            <button onclick="filterCards('D')" class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeD hover:text-themeD dark:hover:text-themeD transition-all">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeD group-hover:text-white transition-colors">D</span>Industry & Net Zero
+            </button>
+            <button onclick="filterCards('E')" class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeE hover:text-themeE dark:hover:text-themeE transition-all">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeE group-hover:text-white transition-colors">E</span>Talent & Fellowships
+            </button>
+        </div>
+    </div>
+
+    <!-- Grid -->
+    <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Cards injected by JS -->
+    </div>
+</main>
+
+<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 py-8 text-center text-slate-500 dark:text-slate-400 text-sm mt-auto">
+    <p>LSBU Research Development | Paul-Scott Davidson | *Dates subject to change based on live funder guidance.</p>
+</footer>
+
+<script>
+/* ==================== CONFIG & CONTACT ==================== */
+const CONTACT_EMAIL = "papa@lsbu.ac.uk";
+
+/* ==================== HELPERS ==================== */
+const themeConfig = {
+    'A': { name: 'Green-Digital', colorClass: 'text-themeA', bgClass: 'bg-themeA', borderClass: 'border-themeA' },
+    'B': { name: 'GenAI Education', colorClass: 'text-themeB', bgClass: 'bg-themeB', borderClass: 'border-themeB' },
+    'C': { name: 'Digital Justice', colorClass: 'text-themeC', bgClass: 'bg-themeC', borderClass: 'border-themeC' },
+    'D': { name: 'Industry & Net Zero', colorClass: 'text-themeD', bgClass: 'bg-themeD', borderClass: 'border-themeD' },
+    'E': { name: 'Talent', colorClass: 'text-themeE', bgClass: 'bg-themeE', borderClass: 'border-themeE' }
+};
+
+/* ==================== DATA ==================== */
+// Ordered by Deadline: Closest to 1 Jan 2026 -> Rolling/TBC
+// Core Areas: 'AI', 'Sust', 'Society'
+const fundingData = [
+    // --- JAN 2026 ---
+    {
+        themes: ['A'], core: ['Sust', 'AI'], funder: 'NERC (UKRI)', title: 'Pushing the Frontiers',
+        deadline: '21 Jan 2026', scale: '£1m+',
+        fundingRule: '80% fEC',
+        eligibility: 'UK Research Organisations.',
+        limited: true,
+        desc: 'High-risk, high-reward research into environmental challenges. Encourages speculative applications of AI in ecology or earth observation. Verified 2026 call.',
+        icon: 'fa-rocket', color: 'themeA',
+        url: 'https://www.ukri.org/opportunity/pushing-the-frontiers-of-environmental-research/'
+    },
+    {
+        themes: ['A', 'E'], core: ['AI'], funder: 'EPSRC (UKRI)', title: 'Turing AI Global Fellowships',
+        deadline: '26 Jan 2026', scale: '£4.5m over 5 years',
+        fundingRule: '80% fEC',
+        eligibility: 'International AI researchers relocating to UK.',
+        limited: true,
+        desc: 'For exceptional AI researchers based outside UK. Funds 5 fellowships to establish world-leading AI research in UK institutions. Highly competitive.',
+        icon: 'fa-brain', color: 'themeE',
+        url: 'https://www.ukri.org/opportunity/turing-ai-global-fellowships/'
+    },
+    {
+        themes: ['D', 'A'], core: ['Sust', 'Society'], funder: 'AHRC (UKRI)', title: 'Design Generators',
+        deadline: '29 Jan 2026', scale: 'Undisclosed',
+        fundingRule: '80% fEC (Standard UKRI)',
+        eligibility: 'UK Research Organisations. Design-led focus.',
+        limited: false,
+        desc: 'Funding to combine design-led interventions with arts and humanities methodologies to make positive contributions to the green transition. Highly relevant to D x D\'s expertise in design, digital, and sustainability.',
+        icon: 'fa-pen-ruler', color: 'themeA',
+        url: 'https://www.ukri.org/opportunity/design-generators/'
+    },
+    
+    // --- FEB 2026 ---
+    {
+        themes: ['D'], core: ['AI', 'Sust'], funder: 'Innovate UK', title: 'Innovate UK Growth Catalyst',
+        deadline: '03 Feb 2026', scale: 'Undisclosed',
+        fundingRule: 'Business-led',
+        eligibility: 'UK Businesses. Universities as partners.',
+        limited: false,
+        desc: 'Business-led innovation partnerships. D×D can position as academic R&D partner for AI-driven sustainability pilots, digital twinning in manufacturing, or green-tech validation studies. Flexible funding model supports agile collaboration.',
+        icon: 'fa-lightbulb', color: 'themeD',
+        url: 'https://iuk.ktn-uk.org/opportunities/'
+    },
+    {
+        themes: ['A','D'], core: ['AI', 'Sust'], funder: 'UKRI / Ofgem', title: 'Ofgem Strategic Innovation Fund (SIF) Cycle 5',
+        deadline: '23 Feb 2026', scale: 'Discovery: £150k',
+        fundingRule: '100% (Energy Network Led)',
+        eligibility: 'UK HEIs eligible as partners in network-led consortia.',
+        limited: false,
+        desc: 'The £450m SIF programme continues. Cycle 5 confirmed for 2026. Focus on large-scale energy transition challenges.',
+        icon: 'fa-plug-circle-bolt', color: 'themeA',
+        url: 'https://iuk-business-connect.org.uk/programme/ofgem-strategic-innovation-fund/'
+    },
+    {
+        themes: ['A'], core: ['Sust', 'AI'], funder: 'NERC', title: 'Large Grants – Outlines',
+        deadline: '26 Feb 2026 (Outline)', scale: '£1.2m – £3.7m',
+        fundingRule: '80% fEC',
+        eligibility: 'UK Research Organisations. NERC remit essential.',
+        limited: true,
+        desc: 'Supports adventurous, large-scale environmental science. Proposals utilizing digital twins for climate modeling or environmental data infrastructure are highly favoured.',
+        icon: 'fa-mountain', color: 'themeA',
+        url: 'https://www.ukri.org/opportunity/nerc-large-grants/'
+    },
+
+    // --- MAR 2026 ---
+    {
+        themes: ['E', 'A', 'D'], core: ['AI', 'Sust'], funder: 'Royal Society', title: 'Industry Fellowships',
+        deadline: 'Mar 2026 (Round 1 Decisions)', scale: 'Salary buyout + expenses',
+        fundingRule: '80% fEC',
+        eligibility: 'Academic or Industry researchers.',
+        limited: false,
+        desc: 'Supports mobility between academia and industry. Round 1 applications (Jul-Sep 2025) have decisions in March 2026.',
+        icon: 'fa-handshake', color: 'themeE',
+        url: 'https://royalsociety.org/grants/industry-fellowship/'
+    },
+    {
+        themes: ['B', 'C'], core: ['Society', 'AI'], funder: 'Nuffield Foundation', title: 'Strategic Fund',
+        deadline: '16 Mar 2026 (Outline)', scale: '£1m – £3m',
+        fundingRule: '100% Directly Incurred Costs (No overheads)',
+        eligibility: 'Consortia led by UK institutions.',
+        limited: true,
+        desc: 'For ambitious, multi-disciplinary projects addressing major social challenges. A focus on "AI in Society" is highly relevant.',
+        icon: 'fa-chess-queen', color: 'themeB',
+        url: 'https://www.nuffieldfoundation.org/funding/strategic-fund'
+    },
+    {
+        themes: ['C', 'E'], core: ['Society', 'AI'], funder: 'Mozilla Foundation', title: 'Mozilla Fellowships',
+        deadline: '~Mar 2026', scale: '$60k Stipend',
+        fundingRule: 'Fixed Stipend (Non-fEC)',
+        eligibility: 'Individuals (hosting at LSBU possible).',
+        limited: false,
+        desc: 'Fellowships for activists, researchers, and coders working on "Trustworthy AI" and internet health.',
+        icon: 'fa-globe', color: 'themeC',
+        url: 'https://foundation.mozilla.org/en/fellowships/'
+    },
+
+    // --- APR 2026 ---
+    {
+        themes: ['B', 'C'], core: ['Society'], funder: 'Nuffield Foundation', title: 'RDA Fund – Education & Justice',
+        deadline: '13 Apr 2026 (Outline)', scale: 'Up to £500k',
+        fundingRule: '100% Directly Incurred Costs',
+        eligibility: 'UK Universities and Charities.',
+        limited: false,
+        desc: 'Funds research, development, and analysis projects in education or justice.',
+        icon: 'fa-graduation-cap', color: 'themeB',
+        url: 'https://www.nuffieldfoundation.org/funding/research-development-and-analysis-fund'
+    },
+    {
+        themes: ['C'], core: ['Society'], funder: 'Nuffield Foundation', title: 'RDA – Justice Stream',
+        deadline: '13 Apr 2026 (Outline)', scale: 'Up to £500k',
+        fundingRule: '100% Directly Incurred Costs',
+        eligibility: 'UK Universities and Charities.',
+        limited: false,
+        desc: 'Digital Justice, ADM in justice/welfare. Needs strong legal co-PIs.',
+        icon: 'fa-gavel', color: 'themeC',
+        url: 'https://www.nuffieldfoundation.org/funding/research-development-and-analysis-fund'
+    },
+    {
+        themes: ['A', 'D'], core: ['Sust', 'AI'], funder: 'Horizon Europe (Cluster 4)', title: 'Climate-neutral & Digitised Production',
+        deadline: '14 Apr 2026 (Stage 2)', scale: '€4m – €8m',
+        fundingRule: '100% Direct Costs + 25% Indirect',
+        eligibility: 'Min. 3 legal entities from different EU/Associated countries.',
+        limited: false,
+        desc: 'Twin Transition (Green + Digital) in manufacturing. AI-driven process optimisation and digital twins.',
+        icon: 'fa-industry', color: 'themeA',
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108419'
+    },
+    {
+        themes: ['A', 'C'], core: ['AI', 'Society'], funder: 'Horizon Europe (Cluster 4)', title: 'Human-centred & Ethical Digital Tech',
+        deadline: '14 Apr 2026 (Stage 2)', scale: '€3m – €6m',
+        fundingRule: '100% Direct Costs + 25% Indirect',
+        eligibility: 'Min. 3 legal entities from different EU/Associated countries.',
+        limited: false,
+        desc: 'Trustworthy AI, ethics-by-design, and HCI. Frameworks for explainable AI.',
+        icon: 'fa-users-gear', color: 'themeA',
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108419'
+    },
+    {
+        themes: ['E', 'B', 'A'], core: ['Society', 'AI'], funder: 'AHRC / ESRC (UKRI)', title: 'Doctoral Focal Awards',
+        deadline: '21 Apr 2026 (Outline)', scale: 'Institutional Grant',
+        fundingRule: 'Standard UKRI',
+        eligibility: 'UK HEIs (institutional bids for doctoral cohorts)',
+        limited: false,
+        desc: 'New structure for doctoral support replacing DTPs. Focal Awards target strategic areas, potentially including digital, AI, and sectoral skills. Institutional level application for studentship funding.',
+        icon: 'fa-users-line', color: 'themeE',
+        url: 'https://www.ukri.org/opportunity/'
+    },
+    {
+        themes: ['A', 'D'], core: ['Sust', 'AI'], funder: 'Horizon Europe (Cluster 5)', title: 'Smart Grids & Digital Energy',
+        deadline: 'Apr 2026 (Stage 2)', scale: '€10m – €15m',
+        fundingRule: '100% Direct Costs + 25% Indirect',
+        eligibility: 'Min. 3 legal entities from different EU/Associated countries. UK is eligible.',
+        limited: false,
+        desc: 'Innovation Action for digitalising energy grids. Smart grid technologies.',
+        icon: 'fa-bolt', color: 'themeA',
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420'
+    },
+    {
+        themes: ['C'], core: ['Society', 'AI'], funder: 'Horizon Europe (Cluster 2)', title: 'Democracy & Governance',
+        deadline: 'Apr 2026 (Stage 2)', scale: '€2m – €4m',
+        fundingRule: '100% Direct Costs + 25% Indirect',
+        eligibility: 'Min. 3 legal entities from different EU/Associated countries.',
+        limited: false,
+        desc: 'Addresses challenges to democracy, disinformation, and AI manipulation.',
+        icon: 'fa-landmark', color: 'themeC',
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405'
+    },
+
+    // --- JUL-SEP 2026 ---
+    {
+        themes: ['E', 'C'], core: ['Society'], funder: 'Leverhulme Trust', title: 'Research Project Grants',
+        deadline: 'Paused until Jul 2026 (Next: 01 Jul 2026)', scale: 'Up to £500k',
+        fundingRule: '100% Direct Costs (No overheads)',
+        eligibility: 'UK Universities. Topic must fit Leverhulme remit (originality).',
+        limited: false,
+        desc: 'Responsive mode grants for original research. Excellent for "Blue Skies" social or digital justice projects.',
+        icon: 'fa-feather-pointed', color: 'themeE',
+        url: 'https://www.leverhulme.ac.uk/research-project-grants'
+    },
+    {
+        themes: ['E', 'A', 'C'], core: ['AI', 'Sust'], funder: 'Royal Society', title: 'University Research Fellowships',
+        deadline: 'Jul–Sep 2026', scale: '8 years Salary',
+        fundingRule: '80% fEC',
+        eligibility: 'Early-career researchers.',
+        limited: true,
+        desc: 'The premier UK fellowship for early-career scientists. Supports outstanding scientists in the UK to build an independent research career. Ideal for AI/Net Zero stars. Outcomes: development of a future research leader.',
+        icon: 'fa-user-graduate', color: 'themeE',
+        url: 'https://royalsociety.org/grants/university-research-fellowship/'
+    },
+    {
+        themes: ['A', 'D'], core: ['Sust'], funder: 'Horizon Europe (Cluster 5)', title: 'Energy Performance of Smart Buildings',
+        deadline: '15 Sep 2026', scale: '€5.5m',
+        fundingRule: '100% Direct Costs + 25% Indirect',
+        eligibility: 'Min. 3 legal entities.',
+        limited: false,
+        desc: 'Research technical, social & economic factors impacting energy performance.',
+        icon: 'fa-building', color: 'themeA',
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420'
+    },
+    {
+        themes: ['A', 'D'], core: ['Sust', 'AI'], funder: 'Horizon Europe (Cluster 5)', title: 'Data Platforms for Whole-Life Carbon',
+        deadline: '15 Sep 2026', scale: '€5.5m',
+        fundingRule: '100% Direct Costs + 25% Indirect',
+        eligibility: 'Min. 3 legal entities.',
+        limited: false,
+        desc: 'Advanced data platforms to integrate whole life carbon in building information tools.',
+        icon: 'fa-database', color: 'themeA',
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108420'
+    },
+    {
+        themes: ['C', 'E'], core: ['AI', 'Society'], funder: 'Horizon Europe (Cluster 2)', title: 'Fair Market for Creative Content (GenAI)',
+        deadline: '16 Sep 2026', scale: '€3-4m',
+        fundingRule: '100% Direct Costs + 25% Indirect',
+        eligibility: 'Min. 3 legal entities.',
+        limited: false,
+        desc: 'Fair market for cultural and creative content with generative AI.',
+        icon: 'fa-palette', color: 'themeC',
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405'
+    },
+    {
+        themes: ['C'], core: ['Society'], funder: 'Horizon Europe (Cluster 2)', title: 'Electoral Integrity in Digital Context',
+        deadline: '16 Sep 2026', scale: '€3.5-4m',
+        fundingRule: '100% Direct Costs + 25% Indirect',
+        eligibility: 'Min. 3 legal entities.',
+        limited: false,
+        desc: 'Addressing electoral integrity challenges within the digital context.',
+        icon: 'fa-vote-yea', color: 'themeC',
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405'
+    },
+
+    // --- OCT-DEC 2026 ---
+    {
+        themes: ['A', 'D'], core: ['AI', 'Sust'], funder: 'Horizon Europe (Cluster 5)', title: 'Generative AI for Smarter CCAM',
+        deadline: '08 Oct 2026', scale: '€7m',
+        fundingRule: '100% Direct Costs + 25% Indirect',
+        eligibility: 'Min. 3 legal entities.',
+        limited: false,
+        desc: 'Enhancing perception, decision-making, and validation for smarter CCAM using Generative AI.',
+        icon: 'fa-car', color: 'themeD',
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420'
+    },
+    {
+        themes: ['A', 'D'], core: ['AI', 'Sust'], funder: 'Horizon Europe (Cluster 5)', title: 'Data Sharing for AI in Energy',
+        deadline: '01 Dec 2026', scale: '€10m',
+        fundingRule: '100% Direct Costs + 25% Indirect',
+        eligibility: 'Min. 3 legal entities.',
+        limited: false,
+        desc: 'Data sharing to support training and development of AI foundation models in the energy sector.',
+        icon: 'fa-bolt', color: 'themeD',
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420'
+    },
+
+    // --- ROLLING / OPEN ---
+    {
+        themes: ['E'], core: ['Society'], funder: 'AHRC / ESRC', title: 'International Placement Scheme',
+        deadline: 'Rolling (Opens Jan)', scale: 'Fellowships',
+        fundingRule: 'Stipend + Travel',
+        eligibility: 'PhD students and early career researchers.',
+        limited: false,
+        desc: 'Builds digital humanities, archives and data cultures via international placements.',
+        icon: 'fa-passport', color: 'themeE',
+        url: 'https://www.ukri.org/opportunity/international-placement-scheme/'
+    },
+    {
+        themes: ['A'], core: ['Sust', 'AI'], funder: 'EPSRC', title: 'EPSRC Standard Research Grant',
+        deadline: 'Rolling / Open', scale: 'Flexible',
+        fundingRule: '80% fEC',
+        eligibility: 'Standard UKRI eligibility.',
+        limited: false,
+        desc: 'Primary route for Green ICT and energy-efficient computing research. Offers flexible funding for high-quality research projects within EPSRC remit, allowing for adventurous and multidisciplinary proposals.',
+        icon: 'fa-server', color: 'themeA',
+        url: 'https://www.ukri.org/opportunity/epsrc-standard-research-grant/'
+    },
+    {
+        themes: ['B'], core: ['AI', 'Society'], funder: 'Jisc / Nat. Centre for AI', title: 'AI in Education Pilots',
+        deadline: 'Rolling', scale: 'Pilot funding',
+        fundingRule: 'Direct costs',
+        eligibility: 'UK HE/FE institutions.',
+        limited: false,
+        desc: 'Builds evidence base for ESRC/Nuffield bids.',
+        icon: 'fa-flask', color: 'themeB',
+        url: 'https://www.jisc.ac.uk/ai'
+    },
+    {
+        themes: ['C', 'E'], core: ['AI', 'Society'], funder: 'UKRI / JST (Japan)', title: 'Japan–UK AI Joint Call',
+        deadline: 'TBC (Rolling)', scale: 'Multi-partner',
+        fundingRule: '80% fEC (UK side)',
+        eligibility: 'UK Research Organisations + Japan partners.',
+        limited: false,
+        desc: 'Human-Centred AI. Social/ethical / human–robot interaction.',
+        icon: 'fa-handshake-angle', color: 'themeC',
+        url: 'https://www.ukri.org/what-we-do/collaborating-globally/our-international-partnerships/partnering-with-japan/'
+    },
+    {
+        themes: ['A','D'], core: ['AI', 'Sust'], funder: 'Innovate UK', title: 'Transport Research & Innovation Grants (TRIG)',
+        deadline: 'Rolling', scale: 'Up to £45k',
+        fundingRule: '100% (No match funding)',
+        eligibility: 'UK businesses and academic partners.',
+        limited: false,
+        desc: 'Early-stage, high-risk transport innovation. AI for autonomous vehicles, zero-emission systems, smart infrastructure. Rolling applications.',
+        icon: 'fa-car', color: 'themeD',
+        url: 'https://iuk-business-connect.org.uk/opportunities/'
+    }
+];
+
+/* ==================== CARD RENDERING ==================== */
+function createCard(item, index) {
+    const primaryTheme = item.themes[0];
+    const cfg = themeConfig[primaryTheme];
+    const tags = item.themes.map(t => {
+        const tc = themeConfig[t];
+        return `<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded border ${tc.borderClass} ${tc.colorClass} bg-white dark:bg-slate-800 opacity-90">${t}</span>`;
+    }).join('');
+
+    // Pre-fill email data
+    const emailSubject = `Expression of Interest: ${item.title}`;
+    const emailBody = `Hi Paul-Scott,%0D%0A%0D%0AI am interested in applying for: ${item.title} (${item.funder}).%0D%0A%0D%0APlease schedule a scoping meeting.%0D%0A%0D%0ARegards,`;
+
+    const limitedBadge = item.limited 
+        ? `<div class="bg-lsbu/10 text-lsbu border border-lsbu/20 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider mb-2 inline-block"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Limited Submission</div>` 
+        : '';
+
+    return `
+    <article class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col h-full card-hover group">
+        <div class="absolute top-0 left-0 w-1 h-full ${cfg.bgClass}"></div>
+        
+        <div class="p-5 flex-grow">
+            <!-- Header -->
+            <div class="flex justify-between items-start mb-2">
+                <div class="flex flex-wrap gap-1">${tags}</div>
+                <i class="fa-solid ${item.icon} text-slate-200 dark:text-slate-700 text-2xl group-hover:text-slate-300 transition"></i>
+            </div>
+
+            <!-- Funder & Title -->
+            <h4 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1">
+                ${item.funder}
+            </h4>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight mb-3">
+                <a href="${item.url}" target="_blank" class="hover:underline decoration-2 underline-offset-2 decoration-slate-300 dark:decoration-slate-600">
+                    ${item.title}
+                </a>
+                <i class="fa-solid fa-up-right-from-square ml-1 text-xs opacity-0 group-hover:opacity-100 transition text-slate-400"></i>
+            </h3>
+
+            ${limitedBadge}
+
+            <!-- Description Blurb -->
+            <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed border-l-2 border-slate-100 dark:border-slate-700 pl-3 italic">
+                ${item.desc}
+            </p>
+            
+            <!-- Details Grid -->
+            <div class="text-xs space-y-2 bg-slate-50 dark:bg-slate-900 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
+                <div class="flex justify-between items-start gap-3 border-b border-slate-200 dark:border-slate-800 pb-1">
+                    <span class="font-semibold text-slate-500 shrink-0">Deadline</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-200 text-right leading-tight">${item.deadline}</span>
+                </div>
+                <div class="flex justify-between items-start gap-3 border-b border-slate-200 dark:border-slate-800 pb-1">
+                    <span class="font-semibold text-slate-500 shrink-0">Award Amount</span>
+                    <span class="font-medium text-slate-700 dark:text-slate-300 text-right">${item.scale}</span>
+                </div>
+                <div class="flex justify-between items-start gap-3 border-b border-slate-200 dark:border-slate-800 pb-1">
+                    <span class="font-semibold text-slate-500 shrink-0">Funding Model</span>
+                    <span class="font-medium text-slate-700 dark:text-slate-300 text-right leading-tight">${item.fundingRule}</span>
+                </div>
+                <div class="pt-1">
+                    <span class="font-semibold text-slate-500 block mb-0.5">Eligibility</span>
+                    <span class="font-medium text-slate-700 dark:text-slate-300 leading-tight block">${item.eligibility}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Footer -->
+        <div class="px-5 py-3 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+             <a href="mailto:${CONTACT_EMAIL}?subject=${emailSubject}&body=${emailBody}" 
+               class="block w-full text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 hover:border-slate-400 hover:text-slate-800 dark:hover:text-slate-100 text-slate-500 dark:text-slate-400 text-xs font-semibold py-2 rounded transition shadow-sm">
+                <i class="fa-regular fa-envelope mr-1"></i> Express Interest
+            </a>
+        </div>
+    </article>`;
+}
+
+/* ==================== FILTER & SEARCH ==================== */
+function filterCards(theme) {
+    // Reset Core buttons first
+    document.querySelectorAll('.core-btn').forEach(btn => {
+        btn.classList.remove('core-active', 'opacity-100');
+        btn.classList.add('opacity-70');
+    });
+
+    const container = document.getElementById('cards-grid');
+    const filtered = theme === 'all' ? fundingData : fundingData.filter(i => i.themes.includes(theme));
+    
+    // Update Theme Buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        const btnTheme = btn.textContent.includes('All') ? 'all' : btn.getAttribute('onclick').match(/'([A-E])'/)[1];
+        btn.className = 'filter-btn group border px-4 py-2 rounded-full text-sm font-semibold transition-colors';
+        if (theme === btnTheme) {
+            btn.classList.add('bg-slate-800', 'text-white', 'border-transparent', 'dark:bg-slate-100', 'dark:text-slate-900');
+        } else {
+            btn.classList.add('bg-white', 'text-slate-600', 'border-slate-200', 'hover:border-slate-300', 'dark:bg-slate-800', 'dark:text-slate-300', 'dark:border-slate-700');
+            if (btnTheme !== 'all') {
+                const colorClass = themeConfig[btnTheme].colorClass;
+                if (btnTheme === 'A') btn.classList.add('hover:text-themeA', 'hover:border-themeA');
+                if (btnTheme === 'B') btn.classList.add('hover:text-themeB', 'hover:border-themeB');
+                if (btnTheme === 'C') btn.classList.add('hover:text-themeC', 'hover:border-themeC');
+                if (btnTheme === 'D') btn.classList.add('hover:text-themeD', 'hover:border-themeD');
+                if (btnTheme === 'E') btn.classList.add('hover:text-themeE', 'hover:border-themeE');
+            }
+        }
+    });
+    renderCards(filtered);
+}
+
+function filterByCore(coreArea) {
+    // Reset Theme Buttons to default state (inactive but hoverable)
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        const btnTheme = btn.textContent.includes('All') ? 'all' : btn.getAttribute('onclick').match(/'([A-E])'/)[1];
+        btn.className = 'filter-btn group border px-4 py-2 rounded-full text-sm font-semibold transition-colors';
+        // Default style
+        btn.classList.add('bg-white', 'text-slate-600', 'border-slate-200', 'hover:border-slate-300', 'dark:bg-slate-800', 'dark:text-slate-300', 'dark:border-slate-700');
+        if (btnTheme !== 'all') {
+             const colorClass = themeConfig[btnTheme].colorClass;
+             if (btnTheme === 'A') btn.classList.add('hover:text-themeA', 'hover:border-themeA');
+             if (btnTheme === 'B') btn.classList.add('hover:text-themeB', 'hover:border-themeB');
+             if (btnTheme === 'C') btn.classList.add('hover:text-themeC', 'hover:border-themeC');
+             if (btnTheme === 'D') btn.classList.add('hover:text-themeD', 'hover:border-themeD');
+             if (btnTheme === 'E') btn.classList.add('hover:text-themeE', 'hover:border-themeE');
+        }
+    });
+
+    // Update Core Buttons
+    document.querySelectorAll('.core-btn').forEach(btn => {
+        btn.classList.remove('core-active', 'opacity-100');
+        btn.classList.add('opacity-70');
+    });
+    
+    const activeBtn = document.getElementById(`btn-core-${coreArea}`);
+    if(activeBtn) {
+        activeBtn.classList.remove('opacity-70');
+        activeBtn.classList.add('core-active', 'opacity-100');
+    }
+
+    // Filter Logic
+    const filtered = fundingData.filter(item => item.core && item.core.includes(coreArea));
+    renderCards(filtered);
+}
+
+function searchCards() {
+    const term = document.getElementById('search').value.toLowerCase();
+    const filtered = fundingData.filter(item => 
+        item.title.toLowerCase().includes(term) || 
+        item.funder.toLowerCase().includes(term) || 
+        item.desc.toLowerCase().includes(term)
+    );
+    renderCards(filtered);
+}
+
+function renderCards(data) {
+    document.getElementById('cards-grid').innerHTML = data.map((item) => {
+        const originalIndex = fundingData.indexOf(item);
+        return createCard(item, originalIndex);
+    }).join('');
+}
+
+function exportCSV() {
+    let csv = "Funder,Title,Deadline,Scale,FundingRule,LimitedSubmission,Themes,CoreAreas,Description,URL\n";
+    fundingData.forEach(item => {
+        const core = item.core ? item.core.join('|') : '';
+        csv += `"${item.funder}","${item.title.replace(/"/g,'""')}","${item.deadline}","${item.scale}","${item.fundingRule}","${item.limited ? 'Yes' : 'No'}","${item.themes.join('|')}","${core}","${item.desc.replace(/"/g,'""')}","${item.url}"\n`;
+    });
+    const blob = new Blob([csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download="LSBU_Funding_Matrix_Q1_2026.csv"; a.click();
+}
+
+function exportJSON() {
+    const json = JSON.stringify(fundingData, null, 2);
+    const blob = new Blob([json], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download="LSBU_Funding_Matrix_Q1_2026.json"; a.click();
+}
+
+/* ==================== INIT ==================== */
+filterCards('all');
+</script>
+</body>
+</html>
