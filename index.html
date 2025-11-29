@@ -868,13 +868,13 @@ const fundingData = [
     },
     {
         themes: ['A','D'], core: ['AI', 'Sust'], funder: 'Innovate UK', title: 'Transport Research & Innovation Grants (TRIG)',
-        deadline: 'Rolling', scale: 'Up to £45k',
+        deadline: 'Expected Jun 2026', scale: 'Up to £45k',
         fundingRule: '100% (No match funding)',
         eligibility: 'UK businesses and academic partners.',
         limited: false,
-        desc: 'Early-stage, high-risk transport innovation. AI for autonomous vehicles, zero-emission systems, smart infrastructure. Rolling applications.',
+        desc: 'Early-stage, high-risk transport innovation. AI for autonomous vehicles, zero-emission systems, smart infrastructure. Annual competition.',
         icon: 'fa-car', color: 'themeD',
-        url: 'https://www.gov.uk/government/collections/transport-research-and-innovation-grants-trig'
+        url: ''
     }
 ];
 
@@ -907,6 +907,11 @@ function createCard(item, options = {}) {
     const animationClass = reduceMotion ? '' : ' card-enter';
     const animationStyle = reduceMotion ? '' : ` style="animation-delay:${animationDelay}ms"`;
 
+    // Handle missing URL logic
+    const titleHtml = item.url
+        ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer" class="hover:underline decoration-2 underline-offset-2 decoration-slate-300 dark:decoration-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">${escapeHTML(item.title)}</a> <i class="fa-solid fa-up-right-from-square ml-1 text-xs opacity-0 group-hover:opacity-100 transition text-slate-400" aria-hidden="true"></i>`
+        : `<span>${escapeHTML(item.title)}</span>`;
+
     return `
     <article class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col h-full card-hover group${animationClass}"${animationStyle}>
         <div class="absolute top-0 left-0 w-1 h-full ${cfg.bgClass}" aria-hidden="true"></div>
@@ -923,13 +928,7 @@ function createCard(item, options = {}) {
                 ${escapeHTML(item.funder)}
             </h4>
             <h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight mb-3">
-                <a href="${item.url}"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="hover:underline decoration-2 underline-offset-2 decoration-slate-300 dark:decoration-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
-                    ${escapeHTML(item.title)}
-                </a>
-                <i class="fa-solid fa-up-right-from-square ml-1 text-xs opacity-0 group-hover:opacity-100 transition text-slate-400" aria-hidden="true"></i>
+                ${titleHtml}
             </h3>
 
             ${limitedBadge}
