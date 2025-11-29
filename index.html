@@ -3,6 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Research funding opportunities matrix for LSBU D x D research themes: Green-Digital & Sustainability, GenAI in Education, Digital Justice, Industry & Net Zero, Talent & Fellowships. Q1 2026 deadlines.">
+    <meta name="keywords" content="research funding, UKRI, Horizon Europe, LSBU, grants, fellowships, AI, sustainability, digital justice">
+    <meta name="author" content="LSBU Research Awards & Development (RAD)">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="D x D Research Funding Matrix: Q1 2026">
+    <meta property="og:description" content="Comprehensive funding opportunities for digital, design and sustainability research. LSBU RAD.">
+    <meta property="og:site_name" content="LSBU Research Funding Matrix">
+
     <title>D x D Research Funding Matrix: Q1 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -55,23 +65,42 @@
             </div>
             <div class="flex items-center gap-6">
                 <!-- Dark mode toggle -->
-                <button onclick="document.documentElement.classList.toggle('dark')" class="text-white/80 hover:text-white transition" title="Toggle Dark Mode">
+                <button
+                    onclick="toggleDarkMode()"
+                    class="text-white/80 hover:text-white transition"
+                    title="Toggle Dark Mode"
+                    aria-label="Toggle dark mode">
                     <i class="fa-solid fa-circle-half-stroke text-2xl"></i>
                 </button>
                 <!-- Legend / Core Focus Filter -->
                 <div class="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20 hidden md:block">
                     <p class="text-sm font-semibold text-slate-300 text-center mb-3">Filter by Core Focus Area</p>
-                    <div class="flex justify-center gap-8">
-                        <button onclick="filterByCore('AI')" id="btn-core-AI" class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition">
-                            <i class="fa-solid fa-brain text-themeE text-2xl mb-2 group-hover:scale-110 transition"></i>
+                    <div class="flex justify-center gap-8" role="group" aria-label="Core focus area filters">
+                        <button
+                            onclick="filterByCore('AI')"
+                            id="btn-core-AI"
+                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition"
+                            aria-label="Filter by AI focus area"
+                            aria-pressed="false">
+                            <i class="fa-solid fa-brain text-themeE text-2xl mb-2 group-hover:scale-110 transition" aria-hidden="true"></i>
                             <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400 group-hover:text-white transition">AI</span>
                         </button>
-                        <button onclick="filterByCore('Sust')" id="btn-core-Sust" class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition">
-                            <i class="fa-solid fa-leaf text-themeA text-2xl mb-2 group-hover:scale-110 transition"></i>
+                        <button
+                            onclick="filterByCore('Sust')"
+                            id="btn-core-Sust"
+                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition"
+                            aria-label="Filter by Sustainability focus area"
+                            aria-pressed="false">
+                            <i class="fa-solid fa-leaf text-themeA text-2xl mb-2 group-hover:scale-110 transition" aria-hidden="true"></i>
                             <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400 group-hover:text-white transition">Sust.</span>
                         </button>
-                        <button onclick="filterByCore('Society')" id="btn-core-Society" class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition">
-                            <i class="fa-solid fa-users text-themeC text-2xl mb-2 group-hover:scale-110 transition"></i>
+                        <button
+                            onclick="filterByCore('Society')"
+                            id="btn-core-Society"
+                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition"
+                            aria-label="Filter by Society focus area"
+                            aria-pressed="false">
+                            <i class="fa-solid fa-users text-themeC text-2xl mb-2 group-hover:scale-110 transition" aria-hidden="true"></i>
                             <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400 group-hover:text-white transition">Society</span>
                         </button>
                     </div>
@@ -85,43 +114,80 @@
     <!-- Search + Filters + Export -->
     <div class="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-            <input type="text" id="search" placeholder="Search titles, funders, keywords…" 
-                   class="w-full md:w-80 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400 dark:placeholder-slate-500"
-                   onkeyup="searchCards()">
-            
+            <div class="w-full md:w-80">
+                <label for="search" class="sr-only">Search funding opportunities</label>
+                <input
+                    type="search"
+                    id="search"
+                    placeholder="Search titles, funders, keywords…"
+                    class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400 dark:placeholder-slate-500"
+                    onkeyup="debouncedSearch()"
+                    aria-label="Search funding opportunities by title, funder, or keywords">
+            </div>
+
             <div class="flex items-center gap-3">
-                <button onclick="exportCSV()" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition text-slate-600 dark:text-slate-300">
-                    <i class="fa-solid fa-download"></i> CSV
+                <button
+                    onclick="exportCSV()"
+                    class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition text-slate-600 dark:text-slate-300"
+                    aria-label="Export funding data as CSV">
+                    <i class="fa-solid fa-download" aria-hidden="true"></i> CSV
                 </button>
-                <button onclick="exportJSON()" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition text-slate-600 dark:text-slate-300">
-                    <i class="fa-solid fa-file-code"></i> JSON
+                <button
+                    onclick="exportJSON()"
+                    class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition text-slate-600 dark:text-slate-300"
+                    aria-label="Export funding data as JSON">
+                    <i class="fa-solid fa-file-code" aria-hidden="true"></i> JSON
                 </button>
             </div>
         </div>
 
         <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">Filter by Strategic Theme</h3>
-        <div class="flex flex-wrap gap-2" id="filter-container">
-            <button onclick="filterCards('all')" class="filter-btn active bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all">All Streams</button>
-            <button onclick="filterCards('A')" class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeA hover:text-themeA dark:hover:text-themeA transition-all">
-                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeA group-hover:text-white transition-colors">A</span>Green-Digital & Sust.
+        <div class="flex flex-wrap gap-2" id="filter-container" role="group" aria-label="Strategic theme filters">
+            <button
+                onclick="filterCards('all')"
+                class="filter-btn active bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all"
+                aria-label="Show all funding streams"
+                aria-pressed="true">All Streams</button>
+            <button
+                onclick="filterCards('A')"
+                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeA hover:text-themeA dark:hover:text-themeA transition-all"
+                aria-label="Filter by Theme A: Green-Digital and Sustainability"
+                aria-pressed="false">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeA group-hover:text-white transition-colors" aria-hidden="true">A</span>Green-Digital & Sust.
             </button>
-            <button onclick="filterCards('B')" class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeB hover:text-themeB dark:hover:text-themeB transition-all">
-                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeB group-hover:text-white transition-colors">B</span>GenAI in Education
+            <button
+                onclick="filterCards('B')"
+                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeB hover:text-themeB dark:hover:text-themeB transition-all"
+                aria-label="Filter by Theme B: GenAI in Education"
+                aria-pressed="false">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeB group-hover:text-white transition-colors" aria-hidden="true">B</span>GenAI in Education
             </button>
-            <button onclick="filterCards('C')" class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeC hover:text-themeC dark:hover:text-themeC transition-all">
-                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeC group-hover:text-white transition-colors">C</span>Digital Justice
+            <button
+                onclick="filterCards('C')"
+                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeC hover:text-themeC dark:hover:text-themeC transition-all"
+                aria-label="Filter by Theme C: Digital Justice"
+                aria-pressed="false">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeC group-hover:text-white transition-colors" aria-hidden="true">C</span>Digital Justice
             </button>
-            <button onclick="filterCards('D')" class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeD hover:text-themeD dark:hover:text-themeD transition-all">
-                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeD group-hover:text-white transition-colors">D</span>Industry & Net Zero
+            <button
+                onclick="filterCards('D')"
+                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeD hover:text-themeD dark:hover:text-themeD transition-all"
+                aria-label="Filter by Theme D: Industry and Net Zero"
+                aria-pressed="false">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeD group-hover:text-white transition-colors" aria-hidden="true">D</span>Industry & Net Zero
             </button>
-            <button onclick="filterCards('E')" class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeE hover:text-themeE dark:hover:text-themeE transition-all">
-                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeE group-hover:text-white transition-colors">E</span>Talent & Fellowships
+            <button
+                onclick="filterCards('E')"
+                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeE hover:text-themeE dark:hover:text-themeE transition-all"
+                aria-label="Filter by Theme E: Talent and Fellowships"
+                aria-pressed="false">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeE group-hover:text-white transition-colors" aria-hidden="true">E</span>Talent & Fellowships
             </button>
         </div>
     </div>
 
     <!-- Grid -->
-    <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="region" aria-live="polite" aria-label="Funding opportunities">
         <!-- Cards injected by JS -->
     </div>
 </main>
@@ -134,7 +200,53 @@
 /* ==================== CONFIG & CONTACT ==================== */
 const CONTACT_EMAIL = "papa@lsbu.ac.uk";
 
-/* ==================== HELPERS ==================== */
+/* ==================== UTILITY FUNCTIONS ==================== */
+// Debounce function to limit how often a function can be called
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Dark mode toggle with localStorage persistence
+function toggleDarkMode() {
+    const html = document.documentElement;
+    const isDark = html.classList.toggle('dark');
+    localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+}
+
+// Initialize dark mode from localStorage
+function initDarkMode() {
+    const darkMode = localStorage.getItem('darkMode');
+    if (darkMode === 'enabled') {
+        document.documentElement.classList.add('dark');
+    }
+}
+
+// Update button styling helper to reduce code duplication
+function updateButtonStyle(button, isActive, theme = null) {
+    button.className = 'filter-btn group border px-4 py-2 rounded-full text-sm font-semibold transition-colors';
+
+    if (isActive) {
+        button.classList.add('bg-slate-800', 'text-white', 'border-transparent', 'dark:bg-slate-100', 'dark:text-slate-900');
+        button.setAttribute('aria-pressed', 'true');
+    } else {
+        button.classList.add('bg-white', 'text-slate-600', 'border-slate-200', 'hover:border-slate-300', 'dark:bg-slate-800', 'dark:text-slate-300', 'dark:border-slate-700');
+        button.setAttribute('aria-pressed', 'false');
+
+        if (theme && theme !== 'all') {
+            button.classList.add(`hover:text-theme${theme}`, `hover:border-theme${theme}`);
+        }
+    }
+}
+
+/* ==================== THEME CONFIG ==================== */
 const themeConfig = {
     'A': { name: 'Green-Digital', colorClass: 'text-themeA', bgClass: 'bg-themeA', borderClass: 'border-themeA' },
     'B': { name: 'GenAI Education', colorClass: 'text-themeB', bgClass: 'bg-themeB', borderClass: 'border-themeB' },
@@ -550,59 +662,40 @@ function filterCards(theme) {
     document.querySelectorAll('.core-btn').forEach(btn => {
         btn.classList.remove('core-active', 'opacity-100');
         btn.classList.add('opacity-70');
+        btn.setAttribute('aria-pressed', 'false');
     });
 
-    const container = document.getElementById('cards-grid');
     const filtered = theme === 'all' ? fundingData : fundingData.filter(i => i.themes.includes(theme));
-    
-    // Update Theme Buttons
+
+    // Update Theme Buttons using helper function
     document.querySelectorAll('.filter-btn').forEach(btn => {
         const btnTheme = btn.textContent.includes('All') ? 'all' : btn.getAttribute('onclick').match(/'([A-E])'/)[1];
-        btn.className = 'filter-btn group border px-4 py-2 rounded-full text-sm font-semibold transition-colors';
-        if (theme === btnTheme) {
-            btn.classList.add('bg-slate-800', 'text-white', 'border-transparent', 'dark:bg-slate-100', 'dark:text-slate-900');
-        } else {
-            btn.classList.add('bg-white', 'text-slate-600', 'border-slate-200', 'hover:border-slate-300', 'dark:bg-slate-800', 'dark:text-slate-300', 'dark:border-slate-700');
-            if (btnTheme !== 'all') {
-                const colorClass = themeConfig[btnTheme].colorClass;
-                if (btnTheme === 'A') btn.classList.add('hover:text-themeA', 'hover:border-themeA');
-                if (btnTheme === 'B') btn.classList.add('hover:text-themeB', 'hover:border-themeB');
-                if (btnTheme === 'C') btn.classList.add('hover:text-themeC', 'hover:border-themeC');
-                if (btnTheme === 'D') btn.classList.add('hover:text-themeD', 'hover:border-themeD');
-                if (btnTheme === 'E') btn.classList.add('hover:text-themeE', 'hover:border-themeE');
-            }
-        }
+        const isActive = theme === btnTheme;
+        updateButtonStyle(btn, isActive, btnTheme);
     });
+
     renderCards(filtered);
 }
 
 function filterByCore(coreArea) {
-    // Reset Theme Buttons to default state (inactive but hoverable)
+    // Reset Theme Buttons to default state using helper function
     document.querySelectorAll('.filter-btn').forEach(btn => {
         const btnTheme = btn.textContent.includes('All') ? 'all' : btn.getAttribute('onclick').match(/'([A-E])'/)[1];
-        btn.className = 'filter-btn group border px-4 py-2 rounded-full text-sm font-semibold transition-colors';
-        // Default style
-        btn.classList.add('bg-white', 'text-slate-600', 'border-slate-200', 'hover:border-slate-300', 'dark:bg-slate-800', 'dark:text-slate-300', 'dark:border-slate-700');
-        if (btnTheme !== 'all') {
-             const colorClass = themeConfig[btnTheme].colorClass;
-             if (btnTheme === 'A') btn.classList.add('hover:text-themeA', 'hover:border-themeA');
-             if (btnTheme === 'B') btn.classList.add('hover:text-themeB', 'hover:border-themeB');
-             if (btnTheme === 'C') btn.classList.add('hover:text-themeC', 'hover:border-themeC');
-             if (btnTheme === 'D') btn.classList.add('hover:text-themeD', 'hover:border-themeD');
-             if (btnTheme === 'E') btn.classList.add('hover:text-themeE', 'hover:border-themeE');
-        }
+        updateButtonStyle(btn, false, btnTheme);
     });
 
     // Update Core Buttons
     document.querySelectorAll('.core-btn').forEach(btn => {
         btn.classList.remove('core-active', 'opacity-100');
         btn.classList.add('opacity-70');
+        btn.setAttribute('aria-pressed', 'false');
     });
-    
+
     const activeBtn = document.getElementById(`btn-core-${coreArea}`);
-    if(activeBtn) {
+    if (activeBtn) {
         activeBtn.classList.remove('opacity-70');
         activeBtn.classList.add('core-active', 'opacity-100');
+        activeBtn.setAttribute('aria-pressed', 'true');
     }
 
     // Filter Logic
@@ -612,13 +705,16 @@ function filterByCore(coreArea) {
 
 function searchCards() {
     const term = document.getElementById('search').value.toLowerCase();
-    const filtered = fundingData.filter(item => 
-        item.title.toLowerCase().includes(term) || 
-        item.funder.toLowerCase().includes(term) || 
+    const filtered = fundingData.filter(item =>
+        item.title.toLowerCase().includes(term) ||
+        item.funder.toLowerCase().includes(term) ||
         item.desc.toLowerCase().includes(term)
     );
     renderCards(filtered);
 }
+
+// Debounced version of searchCards (300ms delay)
+const debouncedSearch = debounce(searchCards, 300);
 
 function renderCards(data) {
     document.getElementById('cards-grid').innerHTML = data.map((item) => {
@@ -628,24 +724,46 @@ function renderCards(data) {
 }
 
 function exportCSV() {
-    let csv = "Funder,Title,Deadline,Scale,FundingRule,LimitedSubmission,Themes,CoreAreas,Description,URL\n";
-    fundingData.forEach(item => {
-        const core = item.core ? item.core.join('|') : '';
-        csv += `"${item.funder}","${item.title.replace(/"/g,'""')}","${item.deadline}","${item.scale}","${item.fundingRule}","${item.limited ? 'Yes' : 'No'}","${item.themes.join('|')}","${core}","${item.desc.replace(/"/g,'""')}","${item.url}"\n`;
-    });
-    const blob = new Blob([csv], {type: 'text/csv'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href=url; a.download="LSBU_Funding_Matrix_Q1_2026.csv"; a.click();
+    try {
+        let csv = "Funder,Title,Deadline,Scale,FundingRule,LimitedSubmission,Themes,CoreAreas,Description,URL\n";
+        fundingData.forEach(item => {
+            const core = item.core ? item.core.join('|') : '';
+            csv += `"${item.funder}","${item.title.replace(/"/g, '""')}","${item.deadline}","${item.scale}","${item.fundingRule}","${item.limited ? 'Yes' : 'No'}","${item.themes.join('|')}","${core}","${item.desc.replace(/"/g, '""')}","${item.url}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "LSBU_Funding_Matrix_Q1_2026.csv";
+        a.click();
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error exporting CSV:', error);
+        alert('Failed to export CSV file. Please try again.');
+    }
 }
 
 function exportJSON() {
-    const json = JSON.stringify(fundingData, null, 2);
-    const blob = new Blob([json], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href=url; a.download="LSBU_Funding_Matrix_Q1_2026.json"; a.click();
+    try {
+        const json = JSON.stringify(fundingData, null, 2);
+        const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "LSBU_Funding_Matrix_Q1_2026.json";
+        a.click();
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error exporting JSON:', error);
+        alert('Failed to export JSON file. Please try again.');
+    }
 }
 
 /* ==================== INIT ==================== */
+// Initialize dark mode from localStorage
+initDarkMode();
+
+// Initialize cards display
 filterCards('all');
 </script>
 </body>
