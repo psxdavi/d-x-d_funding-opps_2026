@@ -7,6 +7,10 @@
     <meta name="keywords" content="research funding, UKRI, Horizon Europe, LSBU, grants, fellowships, AI, sustainability, digital justice">
     <meta name="author" content="LSBU Research Awards & Development (RAD)">
 
+    <!-- Security -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="D x D Research Funding Matrix: Q1 2026">
@@ -15,7 +19,7 @@
 
     <title>D x D Research Funding Matrix: Q1 2026</title>
 
-    <!-- External Resources with SRI for Security -->
+    <!-- External Resources with SRI and Error Handling -->
     <script src="https://cdn.tailwindcss.com"
             integrity="sha384-T5jhQKMa2qO7dq0akZ2wSiLJL7l6HvIx2A0KiXV5LPPzZ3xBxLQ5C6tY1f2B6TfQ"
             crossorigin="anonymous"
@@ -52,7 +56,10 @@
 
     <style>
         /* Base Styles */
-        body { background-color: #f8fafc; }
+        body {
+            background-color: #f8fafc;
+            min-height: 100vh;
+        }
         .dark body { background-color: #0f172a; }
 
         /* Card Animations */
@@ -65,7 +72,7 @@
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
         }
 
-        /* Scrollbar Hiding */
+        /* Scrollbar Utilities */
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -73,7 +80,7 @@
         .core-active i { transform: scale(1.2); }
         .core-active span { color: #fff !important; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
 
-        /* Toast Notification Styles */
+        /* Toast Notification System */
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -87,10 +94,11 @@
             transition: transform 0.3s ease;
             z-index: 1000;
             max-width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
-        .toast.show {
-            transform: translateY(0);
-        }
+        .toast.show { transform: translateY(0); }
         .toast.success { background: #10b981; }
         .toast.error { background: #ef4444; }
         .toast.info { background: #3b82f6; }
@@ -99,7 +107,7 @@
         .dark .toast.error { background: #dc2626; }
         .dark .toast.info { background: #2563eb; }
 
-        /* Loading Spinner */
+        /* Loading States */
         .spinner {
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
@@ -113,16 +121,16 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Empty State Styles */
+        /* Empty State */
         .empty-state {
             opacity: 0;
-            animation: fadeIn 0.3s ease forwards;
+            animation: fadeIn 0.5s ease forwards;
         }
         @keyframes fadeIn {
             to { opacity: 1; }
         }
 
-        /* Focus Visible Improvements */
+        /* Focus Improvements for Accessibility */
         button:focus-visible,
         a:focus-visible,
         input:focus-visible {
@@ -130,18 +138,34 @@
             outline-offset: 2px;
         }
 
-        /* Skip to Content Link */
+        /* Skip to Content (Accessibility) */
         .skip-link {
             position: absolute;
             top: -40px;
             left: 0;
             background: #0f172a;
             color: white;
-            padding: 8px;
+            padding: 8px 16px;
             z-index: 100;
+            border-radius: 0 0 4px 0;
         }
         .skip-link:focus {
             top: 0;
+        }
+
+        /* Card Grid Animation */
+        .card-enter {
+            animation: cardEnter 0.3s ease;
+        }
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -154,7 +178,7 @@
 <div id="toast" class="toast" role="alert" aria-live="polite" aria-atomic="true"></div>
 
 <!-- Header -->
-<header class="bg-dark text-white pt-8 pb-12 px-6 relative overflow-hidden">
+<header class="bg-dark text-white pt-8 pb-12 px-6 relative overflow-hidden" role="banner">
     <div class="absolute top-0 right-0 opacity-10 text-9xl transform translate-x-10 -translate-y-10" aria-hidden="true">
         <i class="fa-solid fa-network-wired"></i>
     </div>
@@ -169,7 +193,7 @@
                 <!-- Dark Mode Toggle -->
                 <button
                     onclick="toggleDarkMode()"
-                    class="text-white/80 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-dark rounded"
+                    class="text-white/80 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-dark rounded p-2"
                     title="Toggle Dark Mode"
                     aria-label="Toggle dark mode"
                     type="button">
@@ -183,7 +207,7 @@
                         <button
                             onclick="filterByCore('AI')"
                             id="btn-core-AI"
-                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition focus:outline-none focus:ring-2 focus:ring-white rounded"
+                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition focus:outline-none focus:ring-2 focus:ring-white rounded p-1"
                             aria-label="Filter by AI focus area"
                             aria-pressed="false"
                             type="button">
@@ -193,7 +217,7 @@
                         <button
                             onclick="filterByCore('Sust')"
                             id="btn-core-Sust"
-                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition focus:outline-none focus:ring-2 focus:ring-white rounded"
+                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition focus:outline-none focus:ring-2 focus:ring-white rounded p-1"
                             aria-label="Filter by Sustainability focus area"
                             aria-pressed="false"
                             type="button">
@@ -203,7 +227,7 @@
                         <button
                             onclick="filterByCore('Society')"
                             id="btn-core-Society"
-                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition focus:outline-none focus:ring-2 focus:ring-white rounded"
+                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition focus:outline-none focus:ring-2 focus:ring-white rounded p-1"
                             aria-label="Filter by Society focus area"
                             aria-pressed="false"
                             type="button">
@@ -217,20 +241,23 @@
     </div>
 </header>
 
-<main id="main-content" class="max-w-7xl mx-auto px-4 -mt-8 relative z-20 pb-20 flex-grow">
+<main id="main-content" class="max-w-7xl mx-auto px-4 -mt-8 relative z-20 pb-20 flex-grow" role="main">
     <!-- Search + Filters + Export -->
     <div class="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
             <div class="w-full md:w-80">
                 <label for="search" class="sr-only">Search funding opportunities</label>
-                <input
-                    type="search"
-                    id="search"
-                    placeholder="Search titles, funders, keywords…"
-                    class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400 dark:placeholder-slate-500"
-                    onkeyup="debouncedSearch()"
-                    oninput="handleSearchInput()"
-                    aria-label="Search funding opportunities by title, funder, or keywords">
+                <div class="relative">
+                    <input
+                        type="search"
+                        id="search"
+                        placeholder="Search titles, funders, keywords…"
+                        class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400 dark:placeholder-slate-500"
+                        onkeyup="debouncedSearch()"
+                        oninput="handleSearchInput()"
+                        aria-label="Search funding opportunities by title, funder, or keywords">
+                    <i class="fa-solid fa-search absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" aria-hidden="true"></i>
+                </div>
             </div>
 
             <div class="flex items-center gap-3">
@@ -309,14 +336,14 @@
     </div>
 
     <!-- Results Counter -->
-    <div id="results-counter" class="text-sm text-slate-600 dark:text-slate-400 mb-4" role="status" aria-live="polite"></div>
+    <div id="results-counter" class="text-sm text-slate-600 dark:text-slate-400 mb-4 font-medium" role="status" aria-live="polite"></div>
 
     <!-- Grid Container -->
     <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="region" aria-live="polite" aria-label="Funding opportunities">
         <!-- Cards will be injected by JavaScript -->
     </div>
 
-    <!-- Empty State (Hidden by default) -->
+    <!-- Empty State -->
     <div id="empty-state" class="hidden empty-state text-center py-16">
         <i class="fa-solid fa-search text-6xl text-slate-300 dark:text-slate-700 mb-4" aria-hidden="true"></i>
         <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">No funding opportunities found</h3>
@@ -325,25 +352,26 @@
             onclick="resetFilters()"
             class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             type="button">
-            Reset Filters
+            <i class="fa-solid fa-rotate-right mr-2"></i>Reset Filters
         </button>
     </div>
 </main>
 
-<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 py-8 text-center text-slate-500 dark:text-slate-400 text-sm mt-auto">
+<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 py-8 text-center text-slate-500 dark:text-slate-400 text-sm mt-auto" role="contentinfo">
     <p>LSBU Research Development | Paul-Scott Davidson | *Dates subject to change based on live funder guidance.</p>
 </footer>
 
 <script>
 'use strict';
 
-/* ==================== CONSTANTS & CONFIG ==================== */
+/* ==================== CONFIGURATION ==================== */
 const CONFIG = {
     CONTACT_EMAIL: 'papa@lsbu.ac.uk',
     DEBOUNCE_DELAY: 300,
-    TOAST_DURATION: 3000,
+    TOAST_DURATION: 3500,
     DARK_MODE_KEY: 'darkMode',
-    EXPORT_FILENAME_PREFIX: 'LSBU_Funding_Matrix_Q1_2026'
+    EXPORT_FILENAME_PREFIX: 'LSBU_Funding_Matrix_Q1_2026',
+    ANIMATION_DELAY: 50
 };
 
 const THEME_CONFIG = {
@@ -379,7 +407,7 @@ function debounce(func, wait) {
 }
 
 /**
- * Display a toast notification
+ * Display a toast notification with icon
  * @param {string} message - The message to display
  * @param {string} type - The type of toast (success, error, info)
  */
@@ -387,7 +415,13 @@ function showToast(message, type = 'info') {
     const toast = document.getElementById('toast');
     if (!toast) return;
 
-    toast.textContent = message;
+    const icons = {
+        success: 'fa-circle-check',
+        error: 'fa-circle-exclamation',
+        info: 'fa-circle-info'
+    };
+
+    toast.innerHTML = `<i class="fa-solid ${icons[type]}" aria-hidden="true"></i><span>${escapeHTML(message)}</span>`;
     toast.className = `toast ${type}`;
     toast.classList.add('show');
 
@@ -397,23 +431,26 @@ function showToast(message, type = 'info') {
 }
 
 /**
- * Handle CDN loading errors
+ * Handle CDN loading errors gracefully
  * @param {string} resourceName - Name of the resource that failed to load
  */
 function handleCDNError(resourceName) {
     console.error(`Failed to load ${resourceName} from CDN`);
-    showToast(`Warning: ${resourceName} failed to load. Some features may not work correctly.`, 'error');
+    // Fallback: show a subtle warning but don't break the experience
+    setTimeout(() => {
+        showToast(`Some ${resourceName} features may be limited`, 'error');
+    }, 1000);
 }
 
 /**
- * Sanitize HTML to prevent XSS attacks
- * @param {string} str - The string to sanitize
- * @returns {string} The sanitized string
+ * Escape HTML to prevent XSS attacks
+ * @param {string} str - The string to escape
+ * @returns {string} The escaped string
  */
-function sanitizeHTML(str) {
-    const temp = document.createElement('div');
-    temp.textContent = str;
-    return temp.innerHTML;
+function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
 }
 
 /**
@@ -422,19 +459,19 @@ function sanitizeHTML(str) {
  * @returns {boolean} Whether the data is valid
  */
 function validateFundingData(data) {
-    if (!Array.isArray(data)) return false;
+    if (!Array.isArray(data) || data.length === 0) return false;
 
     const requiredFields = ['themes', 'core', 'funder', 'title', 'deadline', 'scale', 'fundingRule', 'eligibility', 'desc', 'icon', 'color', 'url'];
 
     return data.every(item => {
-        return requiredFields.every(field => field in item);
+        return requiredFields.every(field => field in item && item[field] !== null && item[field] !== undefined);
     });
 }
 
 /* ==================== DARK MODE ==================== */
 
 /**
- * Toggle dark mode and save preference
+ * Toggle dark mode and save preference to localStorage
  */
 function toggleDarkMode() {
     const html = document.documentElement;
@@ -449,7 +486,7 @@ function toggleDarkMode() {
 }
 
 /**
- * Initialize dark mode from localStorage
+ * Initialize dark mode from localStorage on page load
  */
 function initDarkMode() {
     try {
@@ -465,10 +502,10 @@ function initDarkMode() {
 /* ==================== BUTTON STYLING ==================== */
 
 /**
- * Update filter button styling
- * @param {HTMLElement} button - The button element
+ * Update filter button styling based on active state
+ * @param {HTMLElement} button - The button element to style
  * @param {boolean} isActive - Whether the button is active
- * @param {string|null} theme - The theme identifier
+ * @param {string|null} theme - The theme identifier (A-E or 'all')
  */
 function updateButtonStyle(button, isActive, theme = null) {
     button.className = 'filter-btn group border px-4 py-2 rounded-full text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-blue-500';
@@ -811,7 +848,7 @@ const fundingData = [
 /* ==================== CARD RENDERING ==================== */
 
 /**
- * Create HTML for a funding opportunity card
+ * Create HTML markup for a funding opportunity card
  * @param {Object} item - The funding opportunity data
  * @returns {string} The HTML string for the card
  */
@@ -819,13 +856,13 @@ function createCard(item) {
     const primaryTheme = item.themes[0];
     const cfg = THEME_CONFIG[primaryTheme];
 
-    // Create theme tags
+    // Create theme tags with proper escaping
     const tags = item.themes.map(t => {
         const tc = THEME_CONFIG[t];
-        return `<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded border ${tc.borderClass} ${tc.colorClass} bg-white dark:bg-slate-800 opacity-90">${sanitizeHTML(t)}</span>`;
+        return `<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded border ${tc.borderClass} ${tc.colorClass} bg-white dark:bg-slate-800 opacity-90">${escapeHTML(t)}</span>`;
     }).join('');
 
-    // Sanitize and encode email data
+    // Properly encode email parameters
     const emailSubject = encodeURIComponent(`Expression of Interest: ${item.title}`);
     const emailBody = encodeURIComponent(`Hi Paul-Scott,\n\nI am interested in applying for: ${item.title} (${item.funder}).\n\nPlease schedule a scoping meeting.\n\nRegards,`);
 
@@ -834,26 +871,26 @@ function createCard(item) {
         : '';
 
     return `
-    <article class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col h-full card-hover group">
+    <article class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col h-full card-hover group card-enter">
         <div class="absolute top-0 left-0 w-1 h-full ${cfg.bgClass}" aria-hidden="true"></div>
 
         <div class="p-5 flex-grow">
             <!-- Header -->
             <div class="flex justify-between items-start mb-2">
-                <div class="flex flex-wrap gap-1" role="list" aria-label="Funding themes">${tags}</div>
-                <i class="fa-solid ${sanitizeHTML(item.icon)} text-slate-200 dark:text-slate-700 text-2xl group-hover:text-slate-300 transition" aria-hidden="true"></i>
+                <div class="flex flex-wrap gap-1" role="list" aria-label="Theme tags">${tags}</div>
+                <i class="fa-solid ${escapeHTML(item.icon)} text-slate-200 dark:text-slate-700 text-2xl group-hover:text-slate-300 transition" aria-hidden="true"></i>
             </div>
 
             <!-- Funder & Title -->
             <h4 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1">
-                ${sanitizeHTML(item.funder)}
+                ${escapeHTML(item.funder)}
             </h4>
             <h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight mb-3">
-                <a href="${sanitizeHTML(item.url)}"
+                <a href="${escapeHTML(item.url)}"
                    target="_blank"
                    rel="noopener noreferrer"
                    class="hover:underline decoration-2 underline-offset-2 decoration-slate-300 dark:decoration-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
-                    ${sanitizeHTML(item.title)}
+                    ${escapeHTML(item.title)}
                 </a>
                 <i class="fa-solid fa-up-right-from-square ml-1 text-xs opacity-0 group-hover:opacity-100 transition text-slate-400" aria-hidden="true"></i>
             </h3>
@@ -862,26 +899,26 @@ function createCard(item) {
 
             <!-- Description -->
             <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed border-l-2 border-slate-100 dark:border-slate-700 pl-3 italic">
-                ${sanitizeHTML(item.desc)}
+                ${escapeHTML(item.desc)}
             </p>
 
             <!-- Details Grid -->
             <dl class="text-xs space-y-2 bg-slate-50 dark:bg-slate-900 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
                 <div class="flex justify-between items-start gap-3 border-b border-slate-200 dark:border-slate-800 pb-1">
                     <dt class="font-semibold text-slate-500 shrink-0">Deadline</dt>
-                    <dd class="font-bold text-slate-800 dark:text-slate-200 text-right leading-tight">${sanitizeHTML(item.deadline)}</dd>
+                    <dd class="font-bold text-slate-800 dark:text-slate-200 text-right leading-tight">${escapeHTML(item.deadline)}</dd>
                 </div>
                 <div class="flex justify-between items-start gap-3 border-b border-slate-200 dark:border-slate-800 pb-1">
                     <dt class="font-semibold text-slate-500 shrink-0">Award Amount</dt>
-                    <dd class="font-medium text-slate-700 dark:text-slate-300 text-right">${sanitizeHTML(item.scale)}</dd>
+                    <dd class="font-medium text-slate-700 dark:text-slate-300 text-right">${escapeHTML(item.scale)}</dd>
                 </div>
                 <div class="flex justify-between items-start gap-3 border-b border-slate-200 dark:border-slate-800 pb-1">
                     <dt class="font-semibold text-slate-500 shrink-0">Funding Model</dt>
-                    <dd class="font-medium text-slate-700 dark:text-slate-300 text-right leading-tight">${sanitizeHTML(item.fundingRule)}</dd>
+                    <dd class="font-medium text-slate-700 dark:text-slate-300 text-right leading-tight">${escapeHTML(item.fundingRule)}</dd>
                 </div>
                 <div class="pt-1">
                     <dt class="font-semibold text-slate-500 block mb-0.5">Eligibility</dt>
-                    <dd class="font-medium text-slate-700 dark:text-slate-300 leading-tight block">${sanitizeHTML(item.eligibility)}</dd>
+                    <dd class="font-medium text-slate-700 dark:text-slate-300 leading-tight block">${escapeHTML(item.eligibility)}</dd>
                 </div>
             </dl>
         </div>
@@ -899,13 +936,16 @@ function createCard(item) {
 /* ==================== FILTERING & SEARCH ==================== */
 
 /**
- * Filter cards by theme
+ * Filter cards by strategic theme
  * @param {string} theme - The theme to filter by ('all' or A-E)
  */
 function filterCards(theme) {
     currentFilter = theme;
-    currentSearchTerm = ''; // Reset search when filtering
-    document.getElementById('search').value = '';
+    currentSearchTerm = '';
+
+    // Clear search input
+    const searchInput = document.getElementById('search');
+    if (searchInput) searchInput.value = '';
 
     // Reset Core buttons
     resetCoreButtons();
@@ -915,7 +955,7 @@ function filterCards(theme) {
         ? fundingData
         : fundingData.filter(item => item.themes.includes(theme));
 
-    // Update Theme Buttons
+    // Update Theme Buttons using data attributes
     document.querySelectorAll('.filter-btn').forEach(btn => {
         const btnTheme = btn.getAttribute('data-theme');
         const isActive = theme === btnTheme;
@@ -927,12 +967,15 @@ function filterCards(theme) {
 
 /**
  * Filter cards by core focus area
- * @param {string} coreArea - The core area to filter by
+ * @param {string} coreArea - The core area to filter by (AI, Sust, Society)
  */
 function filterByCore(coreArea) {
     currentFilter = `core-${coreArea}`;
-    currentSearchTerm = ''; // Reset search when filtering
-    document.getElementById('search').value = '';
+    currentSearchTerm = '';
+
+    // Clear search input
+    const searchInput = document.getElementById('search');
+    if (searchInput) searchInput.value = '';
 
     // Reset Theme Buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -940,7 +983,7 @@ function filterByCore(coreArea) {
         updateButtonStyle(btn, false, btnTheme);
     });
 
-    // Update Core Buttons
+    // Reset and update Core Buttons
     resetCoreButtons();
 
     const activeBtn = document.getElementById(`btn-core-${coreArea}`);
@@ -956,7 +999,7 @@ function filterByCore(coreArea) {
 }
 
 /**
- * Reset core focus area buttons to default state
+ * Reset all core focus area buttons to default state
  */
 function resetCoreButtons() {
     document.querySelectorAll('.core-btn').forEach(btn => {
@@ -999,7 +1042,7 @@ function searchCards() {
 }
 
 /**
- * Handle search input for real-time feedback
+ * Handle search input for accessibility
  */
 function handleSearchInput() {
     const searchInput = document.getElementById('search');
@@ -1025,13 +1068,14 @@ const debouncedSearch = debounce(() => {
 function resetFilters() {
     currentFilter = 'all';
     currentSearchTerm = '';
-    document.getElementById('search').value = '';
+    const searchInput = document.getElementById('search');
+    if (searchInput) searchInput.value = '';
     filterCards('all');
-    showToast('Filters reset', 'info');
+    showToast('Filters reset - showing all opportunities', 'info');
 }
 
 /**
- * Render cards to the DOM
+ * Render filtered cards to the DOM with animations
  * @param {Array} data - The filtered funding data to render
  */
 function renderCards(data) {
@@ -1042,6 +1086,7 @@ function renderCards(data) {
     if (!grid) return;
 
     if (data.length === 0) {
+        // Show empty state
         grid.innerHTML = '';
         if (emptyState) {
             emptyState.classList.remove('hidden');
@@ -1050,15 +1095,18 @@ function renderCards(data) {
             resultsCounter.textContent = 'No results found';
         }
     } else {
+        // Hide empty state
         if (emptyState) {
             emptyState.classList.add('hidden');
         }
 
+        // Render cards
         grid.innerHTML = data.map(item => createCard(item)).join('');
 
+        // Update results counter
         if (resultsCounter) {
             const plural = data.length === 1 ? 'opportunity' : 'opportunities';
-            resultsCounter.textContent = `Showing ${data.length} ${plural}`;
+            resultsCounter.textContent = `Showing ${data.length} funding ${plural}`;
         }
     }
 
@@ -1073,7 +1121,7 @@ function renderCards(data) {
 /* ==================== EXPORT FUNCTIONS ==================== */
 
 /**
- * Export funding data as CSV
+ * Export funding data as CSV file
  */
 function exportCSV() {
     try {
@@ -1099,31 +1147,31 @@ function exportCSV() {
 
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         downloadFile(blob, `${CONFIG.EXPORT_FILENAME_PREFIX}.csv`);
-        showToast('CSV file exported successfully', 'success');
+        showToast(`CSV exported: ${fundingData.length} opportunities`, 'success');
     } catch (error) {
         console.error('Error exporting CSV:', error);
-        showToast('Failed to export CSV file. Please try again.', 'error');
+        showToast('Failed to export CSV. Please try again.', 'error');
     }
 }
 
 /**
- * Export funding data as JSON
+ * Export funding data as JSON file
  */
 function exportJSON() {
     try {
         const json = JSON.stringify(fundingData, null, 2);
         const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
         downloadFile(blob, `${CONFIG.EXPORT_FILENAME_PREFIX}.json`);
-        showToast('JSON file exported successfully', 'success');
+        showToast(`JSON exported: ${fundingData.length} opportunities`, 'success');
     } catch (error) {
         console.error('Error exporting JSON:', error);
-        showToast('Failed to export JSON file. Please try again.', 'error');
+        showToast('Failed to export JSON. Please try again.', 'error');
     }
 }
 
 /**
- * Helper function to download a file
- * @param {Blob} blob - The blob to download
+ * Helper function to trigger file download
+ * @param {Blob} blob - The blob data to download
  * @param {string} filename - The filename for the download
  */
 function downloadFile(blob, filename) {
@@ -1134,8 +1182,12 @@ function downloadFile(blob, filename) {
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+
+    // Cleanup
+    setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }, 100);
 }
 
 /* ==================== INITIALIZATION ==================== */
@@ -1144,9 +1196,9 @@ function downloadFile(blob, filename) {
  * Initialize the application
  */
 function init() {
-    // Validate data structure
+    // Validate funding data
     if (!validateFundingData(fundingData)) {
-        console.error('Invalid funding data structure');
+        console.error('Invalid funding data structure detected');
         showToast('Error loading funding data', 'error');
         return;
     }
@@ -1157,16 +1209,20 @@ function init() {
     // Initialize cards display
     filterCards('all');
 
-    // Add keyboard navigation support
+    // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
-        // Allow resetting filters with Escape key
+        // Escape key resets filters
         if (e.key === 'Escape' && (currentFilter !== 'all' || currentSearchTerm)) {
+            e.preventDefault();
             resetFilters();
         }
     });
+
+    // Console log for developers
+    console.log(`✅ LSBU Funding Matrix loaded: ${fundingData.length} opportunities`);
 }
 
-// Run initialization when DOM is ready
+// Initialize when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
