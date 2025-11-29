@@ -236,19 +236,29 @@
     <!-- Search + Filters + Export -->
     <div class="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-            <div class="w-full md:w-80">
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                 <label for="search" class="sr-only">Search funding opportunities</label>
-                <div class="relative">
+                <div class="relative w-full sm:w-80">
                     <input
                         type="search"
                         id="search"
                         placeholder="Search titles, funders, keywords…"
                         class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400 dark:placeholder-slate-500"
-                        onkeyup="debouncedSearch()"
-                        oninput="handleSearchInput()"
+                        oninput="updateSearchTerm(this.value)"
                         aria-label="Search funding opportunities by title, funder, or keywords">
                     <i class="fa-solid fa-search absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" aria-hidden="true"></i>
                 </div>
+                <label class="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400" for="sort-select">
+                    <span class="hidden sm:inline">Sort</span>
+                    <select
+                        id="sort-select"
+                        onchange="updateSort(this.value)"
+                        class="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="deadline" selected>Deadline (soonest)</option>
+                        <option value="funder">Funder A → Z</option>
+                        <option value="title">Title A → Z</option>
+                    </select>
+                </label>
             </div>
 
             <div class="flex items-center gap-3">
@@ -376,6 +386,13 @@ const THEME_CONFIG = {
 /* ==================== STATE MANAGEMENT ==================== */
 let currentFilter = 'all';
 let currentSearchTerm = '';
+let currentSort = 'deadline';
+
+const SORTERS = {
+    deadline: (a, b) => parseDeadlineValue(a.deadline) - parseDeadlineValue(b.deadline),
+    funder: (a, b) => a.funder.localeCompare(b.funder),
+    title: (a, b) => a.title.localeCompare(b.title)
+};
 
 /* ==================== UTILITY FUNCTIONS ==================== */
 
@@ -430,6 +447,43 @@ function escapeHTML(str) {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+}
+
+function prefersReducedMotion() {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+        return false;
+    }
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function parseDeadlineValue(deadline) {
+    if (!deadline) return Number.POSITIVE_INFINITY;
+    const normalized = deadline.replace(/[()]/g, '').trim().toLowerCase();
+
+    if (normalized.includes('rolling') || normalized.includes('tbc') || normalized.includes('paused')) {
+        return Number.POSITIVE_INFINITY;
+    }
+
+    const specificDate = normalized.match(/(\d{1,2})\s+([a-zA-Z]+)\s+(\d{4})/);
+    if (specificDate) {
+        const [, day, month, year] = specificDate;
+        return new Date(`${month} ${day}, ${year}`).getTime();
+    }
+
+    const monthYear = normalized.match(/~?([a-zA-Z]+)\s+(\d{4})/);
+    if (monthYear) {
+        const [, month, year] = monthYear;
+        return new Date(`${month} 15, ${year}`).getTime();
+    }
+
+    const monthRange = normalized.match(/([a-zA-Z]+)[–-]([a-zA-Z]+)\s+(\d{4})/);
+    if (monthRange) {
+        const [, month] = monthRange;
+        const year = monthRange[3];
+        return new Date(`${month} 01, ${year}`).getTime();
+    }
+
+    return Number.POSITIVE_INFINITY;
 }
 
 /**
@@ -513,7 +567,7 @@ const fundingData = [
         limited: true,
         desc: 'High-risk, high-reward research into environmental challenges. Encourages speculative applications of AI in ecology or earth observation. Verified 2026 call.',
         icon: 'fa-rocket', color: 'themeA',
-        url: 'https://www.ukri.org/opportunity/pushing-the-frontiers-of-environmental-research/'
+        url: 'https://www.find-government-grants.service.gov.uk/grants/pushing-the-frontiers-of-environmental-research-january-2026-grant-1#summary'
     },
     {
         themes: ['A', 'E'], core: ['AI'], funder: 'EPSRC (UKRI)', title: 'Turing AI Global Fellowships',
@@ -545,7 +599,7 @@ const fundingData = [
         limited: false,
         desc: 'Business-led innovation partnerships. D×D can position as academic R&D partner for AI-driven sustainability pilots, digital twinning in manufacturing, or green-tech validation studies. Flexible funding model supports agile collaboration.',
         icon: 'fa-lightbulb', color: 'themeD',
-        url: 'https://iuk.ktn-uk.org/opportunities/'
+        url: 'https://apply-for-innovation-funding.service.gov.uk/competition/search?keywords=growth%20catalyst'
     },
     {
         themes: ['A','D'], core: ['AI', 'Sust'], funder: 'UKRI / Ofgem', title: 'Ofgem Strategic Innovation Fund (SIF) Cycle 5',
@@ -555,7 +609,7 @@ const fundingData = [
         limited: false,
         desc: 'The £450m SIF programme continues. Cycle 5 confirmed for 2026. Focus on large-scale energy transition challenges.',
         icon: 'fa-plug-circle-bolt', color: 'themeA',
-        url: 'https://iuk-business-connect.org.uk/programme/ofgem-strategic-innovation-fund/'
+        url: 'https://www.ofgem.gov.uk/energy-policy-and-regulation/policy-and-regulatory-programmes/strategic-innovation-fund-sif'
     },
     {
         themes: ['A'], core: ['Sust', 'AI'], funder: 'NERC', title: 'Large Grants – Outlines',
@@ -629,7 +683,7 @@ const fundingData = [
         limited: false,
         desc: 'Twin Transition (Green + Digital) in manufacturing. AI-driven process optimisation and digital twins.',
         icon: 'fa-industry', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Climate-neutral%20and%20Digitised%20Production'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108419&text=Climate-neutral%20and%20Digitised%20Production'
     },
     {
         themes: ['A', 'C'], core: ['AI', 'Society'], funder: 'Horizon Europe (Cluster 4)', title: 'Human-centred & Ethical Digital Tech',
@@ -639,7 +693,7 @@ const fundingData = [
         limited: false,
         desc: 'Trustworthy AI, ethics-by-design, and HCI. Frameworks for explainable AI.',
         icon: 'fa-users-gear', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Human-centred%20and%20Ethical%20Digital%20Tech'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108419&text=Human-centred%20and%20Ethical%20Digital%20Tech'
     },
     {
         themes: ['E', 'B', 'A'], core: ['Society', 'AI'], funder: 'AHRC (UKRI)', title: 'Doctoral Focal Awards',
@@ -659,7 +713,7 @@ const fundingData = [
         limited: false,
         desc: 'Innovation Action for digitalising energy grids. Smart grid technologies.',
         icon: 'fa-bolt', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Smart%20Grids'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420&text=Smart%20Grids'
     },
     {
         themes: ['C'], core: ['Society', 'AI'], funder: 'Horizon Europe (Cluster 2)', title: 'Democracy & Governance',
@@ -669,7 +723,7 @@ const fundingData = [
         limited: false,
         desc: 'Addresses challenges to democracy, disinformation, and AI manipulation.',
         icon: 'fa-landmark', color: 'themeC',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Democracy%20and%20Governance'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405&text=Democracy%20and%20Governance'
     },
 
     // --- JUL-SEP 2026 ---
@@ -691,7 +745,7 @@ const fundingData = [
         limited: true,
         desc: 'The premier UK fellowship for early-career scientists. Supports outstanding scientists in the UK to build an independent research career. Ideal for AI/Net Zero stars. Outcomes: development of a future research leader.',
         icon: 'fa-user-graduate', color: 'themeE',
-        url: 'https://royalsociety.org/grants/university-research-fellowship/'
+        url: 'https://royalsociety.org/grants/university-research-fellowships/'
     },
     {
         themes: ['A', 'D'], core: ['Sust'], funder: 'Horizon Europe (Cluster 5)', title: 'Energy Performance of Smart Buildings',
@@ -701,7 +755,7 @@ const fundingData = [
         limited: false,
         desc: 'Research technical, social & economic factors impacting energy performance.',
         icon: 'fa-building', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Energy%20Performance%20of%20Smart%20Buildings'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420&text=Energy%20Performance%20of%20Smart%20Buildings'
     },
     {
         themes: ['A', 'D'], core: ['Sust', 'AI'], funder: 'Horizon Europe (Cluster 5)', title: 'Data Platforms for Whole-Life Carbon',
@@ -711,7 +765,7 @@ const fundingData = [
         limited: false,
         desc: 'Advanced data platforms to integrate whole life carbon in building information tools.',
         icon: 'fa-database', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Data%20Platforms%20for%20Whole-Life%20Carbon'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420&text=Data%20Platforms%20for%20Whole-Life%20Carbon'
     },
     {
         themes: ['C', 'E'], core: ['AI', 'Society'], funder: 'Horizon Europe (Cluster 2)', title: 'Fair Market for Creative Content (GenAI)',
@@ -721,7 +775,7 @@ const fundingData = [
         limited: false,
         desc: 'Fair market for cultural and creative content with generative AI.',
         icon: 'fa-palette', color: 'themeC',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Fair%20Market%20for%20Creative%20Content'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405&text=Fair%20Market%20for%20Creative%20Content'
     },
     {
         themes: ['C'], core: ['Society'], funder: 'Horizon Europe (Cluster 2)', title: 'Electoral Integrity in Digital Context',
@@ -731,7 +785,7 @@ const fundingData = [
         limited: false,
         desc: 'Addressing electoral integrity challenges within the digital context.',
         icon: 'fa-vote-yea', color: 'themeC',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Electoral%20Integrity'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405&text=Electoral%20Integrity'
     },
     {
         themes: ['C'],
@@ -746,7 +800,7 @@ const fundingData = [
         desc: 'Innovation Action to design, test and scale sustainable business, funding and governance models for independent, pluralistic and trustworthy news/media, strengthening democratic resilience and countering disinformation.',
         icon: 'fa-newspaper',
         color: 'themeC',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Sustainable%20paths%20to%20media%20viability'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405&text=Sustainable%20paths%20to%20media%20viability'
     },
 
     // --- OCT-DEC 2026 ---
@@ -758,7 +812,7 @@ const fundingData = [
         limited: false,
         desc: 'Enhancing perception, decision-making, and validation for smarter CCAM using Generative AI.',
         icon: 'fa-car', color: 'themeD',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Generative%20AI%20for%20Smarter%20CCAM'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420&text=Generative%20AI%20for%20Smarter%20CCAM'
     },
     {
         themes: ['A', 'D'], core: ['AI', 'Sust'], funder: 'Horizon Europe (Cluster 5)', title: 'Data Sharing for AI in Energy',
@@ -768,7 +822,7 @@ const fundingData = [
         limited: false,
         desc: 'Data sharing to support training and development of AI foundation models in the energy sector.',
         icon: 'fa-bolt', color: 'themeD',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Data%20Sharing%20for%20AI%20in%20Energy'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420&text=Data%20Sharing%20for%20AI%20in%20Energy'
     },
 
     // --- ROLLING / OPEN ---
@@ -810,7 +864,7 @@ const fundingData = [
         limited: false,
         desc: 'Human-Centred AI. Social/ethical / human–robot interaction.',
         icon: 'fa-handshake-angle', color: 'themeC',
-        url: 'https://www.ukri.org/what-we-do/collaborating-globally/our-international-partnerships/partnering-with-japan/'
+        url: 'https://www.ukri.org/opportunity/japan-uk-collaborative-call-on-artificial-intelligence/'
     },
     {
         themes: ['A','D'], core: ['AI', 'Sust'], funder: 'Innovate UK', title: 'Transport Research & Innovation Grants (TRIG)',
@@ -820,7 +874,7 @@ const fundingData = [
         limited: false,
         desc: 'Early-stage, high-risk transport innovation. AI for autonomous vehicles, zero-emission systems, smart infrastructure. Rolling applications.',
         icon: 'fa-car', color: 'themeD',
-        url: 'https://iuk-business-connect.org.uk/opportunities/'
+        url: 'https://www.gov.uk/government/collections/transport-research-and-innovation-grants-trig'
     }
 ];
 
@@ -831,7 +885,8 @@ const fundingData = [
  * @param {Object} item - The funding opportunity data
  * @returns {string} The HTML string for the card
  */
-function createCard(item) {
+function createCard(item, options = {}) {
+    const { reduceMotion = false, animationDelay = 0 } = options;
     const primaryTheme = item.themes[0];
     const cfg = THEME_CONFIG[primaryTheme];
 
@@ -849,8 +904,11 @@ function createCard(item) {
         ? `<div class="bg-lsbu/10 text-lsbu border border-lsbu/20 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider mb-2 inline-block"><i class="fa-solid fa-triangle-exclamation mr-1" aria-hidden="true"></i> Limited Submission</div>`
         : '';
 
+    const animationClass = reduceMotion ? '' : ' card-enter';
+    const animationStyle = reduceMotion ? '' : ` style="animation-delay:${animationDelay}ms"`;
+
     return `
-    <article class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col h-full card-hover group card-enter">
+    <article class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col h-full card-hover group${animationClass}"${animationStyle}>
         <div class="absolute top-0 left-0 w-1 h-full ${cfg.bgClass}" aria-hidden="true"></div>
 
         <div class="p-5 flex-grow">
@@ -914,6 +972,58 @@ function createCard(item) {
 
 /* ==================== FILTERING & SEARCH ==================== */
 
+function getFilteredData() {
+    let data = [...fundingData];
+
+    if (currentFilter.startsWith('core-')) {
+        const core = currentFilter.replace('core-', '');
+        data = data.filter(item => item.core && item.core.includes(core));
+    } else if (currentFilter !== 'all' && currentFilter !== 'search') {
+        data = data.filter(item => item.themes.includes(currentFilter));
+    }
+
+    if (currentSearchTerm) {
+        data = data.filter(item =>
+            item.title.toLowerCase().includes(currentSearchTerm) ||
+            item.funder.toLowerCase().includes(currentSearchTerm) ||
+            item.desc.toLowerCase().includes(currentSearchTerm) ||
+            item.eligibility.toLowerCase().includes(currentSearchTerm)
+        );
+    }
+
+    return sortData(data);
+}
+
+function sortData(data) {
+    const sorter = SORTERS[currentSort] || SORTERS.deadline;
+    return [...data].sort(sorter);
+}
+
+function applyFilters() {
+    const data = getFilteredData();
+    renderCards(data);
+}
+
+function updateSearchTerm(value) {
+    currentSearchTerm = value.trim().toLowerCase();
+    if (currentSearchTerm) {
+        currentFilter = 'search';
+        resetCoreButtons();
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            const btnTheme = btn.getAttribute('data-theme');
+            updateButtonStyle(btn, false, btnTheme);
+        });
+    } else if (currentFilter === 'search') {
+        currentFilter = 'all';
+    }
+    applyFilters();
+}
+
+function updateSort(value) {
+    currentSort = value;
+    applyFilters();
+}
+
 /**
  * Filter cards by strategic theme
  * @param {string} theme - The theme to filter by ('all' or A-E)
@@ -929,11 +1039,6 @@ function filterCards(theme) {
     // Reset Core buttons
     resetCoreButtons();
 
-    // Filter data
-    const filtered = theme === 'all'
-        ? fundingData
-        : fundingData.filter(item => item.themes.includes(theme));
-
     // Update Theme Buttons using data attributes
     document.querySelectorAll('.filter-btn').forEach(btn => {
         const btnTheme = btn.getAttribute('data-theme');
@@ -941,7 +1046,7 @@ function filterCards(theme) {
         updateButtonStyle(btn, isActive, btnTheme);
     });
 
-    renderCards(filtered);
+    applyFilters();
 }
 
 /**
@@ -972,9 +1077,7 @@ function filterByCore(coreArea) {
         activeBtn.setAttribute('aria-pressed', 'true');
     }
 
-    // Filter data
-    const filtered = fundingData.filter(item => item.core && item.core.includes(coreArea));
-    renderCards(filtered);
+    applyFilters();
 }
 
 /**
@@ -994,52 +1097,8 @@ function resetCoreButtons() {
 function searchCards() {
     const searchInput = document.getElementById('search');
     if (!searchInput) return;
-
-    currentSearchTerm = searchInput.value.toLowerCase().trim();
-
-    // Reset filters when searching
-    if (currentSearchTerm) {
-        currentFilter = 'search';
-        resetCoreButtons();
-
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            const btnTheme = btn.getAttribute('data-theme');
-            updateButtonStyle(btn, false, btnTheme);
-        });
-    }
-
-    const filtered = currentSearchTerm
-        ? fundingData.filter(item =>
-            item.title.toLowerCase().includes(currentSearchTerm) ||
-            item.funder.toLowerCase().includes(currentSearchTerm) ||
-            item.desc.toLowerCase().includes(currentSearchTerm) ||
-            item.eligibility.toLowerCase().includes(currentSearchTerm)
-        )
-        : fundingData;
-
-    renderCards(filtered);
+    updateSearchTerm(searchInput.value);
 }
-
-/**
- * Handle search input for accessibility
- */
-function handleSearchInput() {
-    const searchInput = document.getElementById('search');
-    if (searchInput && searchInput.value.trim()) {
-        searchInput.setAttribute('aria-busy', 'true');
-    }
-}
-
-/**
- * Debounced search function
- */
-const debouncedSearch = debounce(() => {
-    searchCards();
-    const searchInput = document.getElementById('search');
-    if (searchInput) {
-        searchInput.setAttribute('aria-busy', 'false');
-    }
-}, CONFIG.DEBOUNCE_DELAY);
 
 /**
  * Reset all filters to show all cards
@@ -1079,8 +1138,15 @@ function renderCards(data) {
             emptyState.classList.add('hidden');
         }
 
-        // Render cards
-        grid.innerHTML = data.map(item => createCard(item)).join('');
+        const reduceMotion = prefersReducedMotion();
+
+        // Render cards with optional staggered animations
+        grid.innerHTML = data.map((item, index) =>
+            createCard(item, {
+                reduceMotion,
+                animationDelay: index * CONFIG.ANIMATION_DELAY
+            })
+        ).join('');
 
         // Update results counter
         if (resultsCounter) {
