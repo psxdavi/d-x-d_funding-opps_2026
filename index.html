@@ -7,6 +7,10 @@
     <meta name="keywords" content="research funding, UKRI, Horizon Europe, LSBU, grants, fellowships, AI, sustainability, digital justice">
     <meta name="author" content="LSBU Research Awards & Development (RAD)">
 
+    <!-- Security -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="D x D Research Funding Matrix: Q1 2026">
@@ -14,10 +18,14 @@
     <meta property="og:site_name" content="LSBU Research Funding Matrix">
 
     <title>D x D Research Funding Matrix: Q1 2026</title>
+
+    <!-- External Resources -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
     <script>
+        // Tailwind Configuration
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -36,24 +44,133 @@
             }
         }
     </script>
+
     <style>
-        body { background-color: #f8fafc; }
+        /* Base Styles */
+        body {
+            background-color: #f8fafc;
+            min-height: 100vh;
+        }
         .dark body { background-color: #0f172a; }
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
+
+        /* Card Animations */
+        .card-hover {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .card-hover:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+
+        /* Scrollbar Utilities */
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Active state for Core Focus Area icons */
+
+        /* Active State for Core Focus Area Icons */
         .core-active i { transform: scale(1.2); }
         .core-active span { color: #fff !important; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+
+        /* Toast Notification System */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #0f172a;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            transform: translateY(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .toast.show { transform: translateY(0); }
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        .toast.info { background: #3b82f6; }
+        .dark .toast { background: #1e293b; }
+        .dark .toast.success { background: #059669; }
+        .dark .toast.error { background: #dc2626; }
+        .dark .toast.info { background: #2563eb; }
+
+        /* Loading States */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Focus Improvements for Accessibility */
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* Skip to Content (Accessibility) */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #0f172a;
+            color: white;
+            padding: 8px 16px;
+            z-index: 100;
+            border-radius: 0 0 4px 0;
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Card Grid Animation */
+        .card-enter {
+            animation: cardEnter 0.3s ease;
+        }
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body class="text-slate-800 dark:text-slate-200 transition-colors flex flex-col min-h-screen relative">
 
+<!-- Skip to Main Content (Accessibility) -->
+<a href="#main-content" class="skip-link sr-only focus:not-sr-only">Skip to main content</a>
+
+<!-- Toast Notification Container -->
+<div id="toast" class="toast" role="alert" aria-live="polite" aria-atomic="true"></div>
+
 <!-- Header -->
-<header class="bg-dark text-white pt-8 pb-12 px-6 relative overflow-hidden">
-    <div class="absolute top-0 right-0 opacity-10 text-9xl transform translate-x-10 -translate-y-10">
+<header class="bg-dark text-white pt-8 pb-12 px-6 relative overflow-hidden" role="banner">
+    <div class="absolute top-0 right-0 opacity-10 text-9xl transform translate-x-10 -translate-y-10" aria-hidden="true">
         <i class="fa-solid fa-network-wired"></i>
     </div>
     <div class="max-w-7xl mx-auto relative z-10">
@@ -64,14 +181,16 @@
                 <p class="text-slate-400 text-lg">Focus: 2026 Opportunities & Rolling Deadlines</p>
             </div>
             <div class="flex items-center gap-6">
-                <!-- Dark mode toggle -->
+                <!-- Dark Mode Toggle -->
                 <button
                     onclick="toggleDarkMode()"
-                    class="text-white/80 hover:text-white transition"
+                    class="text-white/80 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-dark rounded p-2"
                     title="Toggle Dark Mode"
-                    aria-label="Toggle dark mode">
+                    aria-label="Toggle dark mode"
+                    type="button">
                     <i class="fa-solid fa-circle-half-stroke text-2xl"></i>
                 </button>
+
                 <!-- Legend / Core Focus Filter -->
                 <div class="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20 hidden md:block">
                     <p class="text-sm font-semibold text-slate-300 text-center mb-3">Filter by Core Focus Area</p>
@@ -79,27 +198,30 @@
                         <button
                             onclick="filterByCore('AI')"
                             id="btn-core-AI"
-                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition"
+                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition focus:outline-none focus:ring-2 focus:ring-white rounded p-1"
                             aria-label="Filter by AI focus area"
-                            aria-pressed="false">
+                            aria-pressed="false"
+                            type="button">
                             <i class="fa-solid fa-brain text-themeE text-2xl mb-2 group-hover:scale-110 transition" aria-hidden="true"></i>
                             <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400 group-hover:text-white transition">AI</span>
                         </button>
                         <button
                             onclick="filterByCore('Sust')"
                             id="btn-core-Sust"
-                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition"
+                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition focus:outline-none focus:ring-2 focus:ring-white rounded p-1"
                             aria-label="Filter by Sustainability focus area"
-                            aria-pressed="false">
+                            aria-pressed="false"
+                            type="button">
                             <i class="fa-solid fa-leaf text-themeA text-2xl mb-2 group-hover:scale-110 transition" aria-hidden="true"></i>
                             <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400 group-hover:text-white transition">Sust.</span>
                         </button>
                         <button
                             onclick="filterByCore('Society')"
                             id="btn-core-Society"
-                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition"
+                            class="core-btn flex flex-col items-center group opacity-70 hover:opacity-100 transition focus:outline-none focus:ring-2 focus:ring-white rounded p-1"
                             aria-label="Filter by Society focus area"
-                            aria-pressed="false">
+                            aria-pressed="false"
+                            type="button">
                             <i class="fa-solid fa-users text-themeC text-2xl mb-2 group-hover:scale-110 transition" aria-hidden="true"></i>
                             <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400 group-hover:text-white transition">Society</span>
                         </button>
@@ -110,32 +232,38 @@
     </div>
 </header>
 
-<main class="max-w-7xl mx-auto px-4 -mt-8 relative z-20 pb-20 flex-grow">
+<main id="main-content" class="max-w-7xl mx-auto px-4 -mt-8 relative z-20 pb-20 flex-grow" role="main">
     <!-- Search + Filters + Export -->
     <div class="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
             <div class="w-full md:w-80">
                 <label for="search" class="sr-only">Search funding opportunities</label>
-                <input
-                    type="search"
-                    id="search"
-                    placeholder="Search titles, funders, keywords…"
-                    class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400 dark:placeholder-slate-500"
-                    onkeyup="debouncedSearch()"
-                    aria-label="Search funding opportunities by title, funder, or keywords">
+                <div class="relative">
+                    <input
+                        type="search"
+                        id="search"
+                        placeholder="Search titles, funders, keywords…"
+                        class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400 dark:placeholder-slate-500"
+                        onkeyup="debouncedSearch()"
+                        oninput="handleSearchInput()"
+                        aria-label="Search funding opportunities by title, funder, or keywords">
+                    <i class="fa-solid fa-search absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" aria-hidden="true"></i>
+                </div>
             </div>
 
             <div class="flex items-center gap-3">
                 <button
                     onclick="exportCSV()"
-                    class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition text-slate-600 dark:text-slate-300"
-                    aria-label="Export funding data as CSV">
+                    class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Export funding data as CSV"
+                    type="button">
                     <i class="fa-solid fa-download" aria-hidden="true"></i> CSV
                 </button>
                 <button
                     onclick="exportJSON()"
-                    class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition text-slate-600 dark:text-slate-300"
-                    aria-label="Export funding data as JSON">
+                    class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Export funding data as JSON"
+                    type="button">
                     <i class="fa-solid fa-file-code" aria-hidden="true"></i> JSON
                 </button>
             </div>
@@ -145,63 +273,118 @@
         <div class="flex flex-wrap gap-2" id="filter-container" role="group" aria-label="Strategic theme filters">
             <button
                 onclick="filterCards('all')"
-                class="filter-btn active bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all"
+                data-theme="all"
+                class="filter-btn active bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
                 aria-label="Show all funding streams"
-                aria-pressed="true">All Streams</button>
+                aria-pressed="true"
+                type="button">All Streams</button>
             <button
                 onclick="filterCards('A')"
-                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeA hover:text-themeA dark:hover:text-themeA transition-all"
+                data-theme="A"
+                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeA hover:text-themeA dark:hover:text-themeA transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
                 aria-label="Filter by Theme A: Green-Digital and Sustainability"
-                aria-pressed="false">
+                aria-pressed="false"
+                type="button">
                 <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeA group-hover:text-white transition-colors" aria-hidden="true">A</span>Green-Digital & Sust.
             </button>
             <button
                 onclick="filterCards('B')"
-                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeB hover:text-themeB dark:hover:text-themeB transition-all"
+                data-theme="B"
+                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeB hover:text-themeB dark:hover:text-themeB transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
                 aria-label="Filter by Theme B: GenAI in Education"
-                aria-pressed="false">
+                aria-pressed="false"
+                type="button">
                 <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeB group-hover:text-white transition-colors" aria-hidden="true">B</span>GenAI in Education
             </button>
             <button
                 onclick="filterCards('C')"
-                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeC hover:text-themeC dark:hover:text-themeC transition-all"
+                data-theme="C"
+                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeC hover:text-themeC dark:hover:text-themeC transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
                 aria-label="Filter by Theme C: Digital Justice"
-                aria-pressed="false">
+                aria-pressed="false"
+                type="button">
                 <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeC group-hover:text-white transition-colors" aria-hidden="true">C</span>Digital Justice
             </button>
             <button
                 onclick="filterCards('D')"
-                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeD hover:text-themeD dark:hover:text-themeD transition-all"
+                data-theme="D"
+                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeD hover:text-themeD dark:hover:text-themeD transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
                 aria-label="Filter by Theme D: Industry and Net Zero"
-                aria-pressed="false">
+                aria-pressed="false"
+                type="button">
                 <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeD group-hover:text-white transition-colors" aria-hidden="true">D</span>Industry & Net Zero
             </button>
             <button
                 onclick="filterCards('E')"
-                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeE hover:text-themeE dark:hover:text-themeE transition-all"
+                data-theme="E"
+                class="filter-btn group bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-themeE hover:text-themeE dark:hover:text-themeE transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
                 aria-label="Filter by Theme E: Talent and Fellowships"
-                aria-pressed="false">
+                aria-pressed="false"
+                type="button">
                 <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-xs mr-2 font-bold border border-slate-200 dark:border-slate-600 group-hover:bg-themeE group-hover:text-white transition-colors" aria-hidden="true">E</span>Talent & Fellowships
             </button>
         </div>
     </div>
 
-    <!-- Grid -->
+    <!-- Results Counter -->
+    <div id="results-counter" class="text-sm text-slate-600 dark:text-slate-400 mb-4 font-medium" role="status" aria-live="polite"></div>
+
+    <!-- Grid Container -->
     <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="region" aria-live="polite" aria-label="Funding opportunities">
-        <!-- Cards injected by JS -->
+        <!-- Cards will be injected by JavaScript -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden empty-state text-center py-16">
+        <i class="fa-solid fa-search text-6xl text-slate-300 dark:text-slate-700 mb-4" aria-hidden="true"></i>
+        <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">No funding opportunities found</h3>
+        <p class="text-slate-500 dark:text-slate-400 mb-6">Try adjusting your filters or search terms</p>
+        <button
+            onclick="resetFilters()"
+            class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            type="button">
+            <i class="fa-solid fa-rotate-right mr-2"></i>Reset Filters
+        </button>
     </div>
 </main>
 
-<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 py-8 text-center text-slate-500 dark:text-slate-400 text-sm mt-auto">
+<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 py-8 text-center text-slate-500 dark:text-slate-400 text-sm mt-auto" role="contentinfo">
     <p>LSBU Research Development | Paul-Scott Davidson | *Dates subject to change based on live funder guidance.</p>
 </footer>
 
 <script>
-/* ==================== CONFIG & CONTACT ==================== */
-const CONTACT_EMAIL = "papa@lsbu.ac.uk";
+'use strict';
+
+/* ==================== CONFIGURATION ==================== */
+const CONFIG = {
+    CONTACT_EMAIL: 'papa@lsbu.ac.uk',
+    DEBOUNCE_DELAY: 300,
+    TOAST_DURATION: 3500,
+    DARK_MODE_KEY: 'darkMode',
+    EXPORT_FILENAME_PREFIX: 'LSBU_Funding_Matrix_Q1_2026',
+    ANIMATION_DELAY: 50
+};
+
+const THEME_CONFIG = {
+    'A': { name: 'Green-Digital', colorClass: 'text-themeA', bgClass: 'bg-themeA', borderClass: 'border-themeA' },
+    'B': { name: 'GenAI Education', colorClass: 'text-themeB', bgClass: 'bg-themeB', borderClass: 'border-themeB' },
+    'C': { name: 'Digital Justice', colorClass: 'text-themeC', bgClass: 'bg-themeC', borderClass: 'border-themeC' },
+    'D': { name: 'Industry & Net Zero', colorClass: 'text-themeD', bgClass: 'bg-themeD', borderClass: 'border-themeD' },
+    'E': { name: 'Talent', colorClass: 'text-themeE', bgClass: 'bg-themeE', borderClass: 'border-themeE' }
+};
+
+/* ==================== STATE MANAGEMENT ==================== */
+let currentFilter = 'all';
+let currentSearchTerm = '';
 
 /* ==================== UTILITY FUNCTIONS ==================== */
-// Debounce function to limit how often a function can be called
+
+/**
+ * Debounce function to limit how often a function can be called
+ * @param {Function} func - The function to debounce
+ * @param {number} wait - The delay in milliseconds
+ * @returns {Function} The debounced function
+ */
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -214,24 +397,97 @@ function debounce(func, wait) {
     };
 }
 
-// Dark mode toggle with localStorage persistence
+/**
+ * Display a toast notification with icon
+ * @param {string} message - The message to display
+ * @param {string} type - The type of toast (success, error, info)
+ */
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+
+    const icons = {
+        success: 'fa-circle-check',
+        error: 'fa-circle-exclamation',
+        info: 'fa-circle-info'
+    };
+
+    toast.innerHTML = `<i class="fa-solid ${icons[type]}" aria-hidden="true"></i><span>${escapeHTML(message)}</span>`;
+    toast.className = `toast ${type}`;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, CONFIG.TOAST_DURATION);
+}
+
+/**
+ * Escape HTML to prevent XSS attacks
+ * @param {string} str - The string to escape
+ * @returns {string} The escaped string
+ */
+function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+/**
+ * Validate funding data structure
+ * @param {Array} data - The funding data to validate
+ * @returns {boolean} Whether the data is valid
+ */
+function validateFundingData(data) {
+    if (!Array.isArray(data) || data.length === 0) return false;
+
+    const requiredFields = ['themes', 'core', 'funder', 'title', 'deadline', 'scale', 'fundingRule', 'eligibility', 'desc', 'icon', 'color', 'url'];
+
+    return data.every(item => {
+        return requiredFields.every(field => field in item && item[field] !== null && item[field] !== undefined);
+    });
+}
+
+/* ==================== DARK MODE ==================== */
+
+/**
+ * Toggle dark mode and save preference to localStorage
+ */
 function toggleDarkMode() {
     const html = document.documentElement;
     const isDark = html.classList.toggle('dark');
-    localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
-}
 
-// Initialize dark mode from localStorage
-function initDarkMode() {
-    const darkMode = localStorage.getItem('darkMode');
-    if (darkMode === 'enabled') {
-        document.documentElement.classList.add('dark');
+    try {
+        localStorage.setItem(CONFIG.DARK_MODE_KEY, isDark ? 'enabled' : 'disabled');
+        showToast(`${isDark ? 'Dark' : 'Light'} mode enabled`, 'success');
+    } catch (error) {
+        console.error('Failed to save dark mode preference:', error);
     }
 }
 
-// Update button styling helper to reduce code duplication
+/**
+ * Initialize dark mode from localStorage on page load
+ */
+function initDarkMode() {
+    try {
+        const darkMode = localStorage.getItem(CONFIG.DARK_MODE_KEY);
+        if (darkMode === 'enabled') {
+            document.documentElement.classList.add('dark');
+        }
+    } catch (error) {
+        console.error('Failed to load dark mode preference:', error);
+    }
+}
+
+/* ==================== BUTTON STYLING ==================== */
+
+/**
+ * Update filter button styling based on active state
+ * @param {HTMLElement} button - The button element to style
+ * @param {boolean} isActive - Whether the button is active
+ * @param {string|null} theme - The theme identifier (A-E or 'all')
+ */
 function updateButtonStyle(button, isActive, theme = null) {
-    button.className = 'filter-btn group border px-4 py-2 rounded-full text-sm font-semibold transition-colors';
+    button.className = 'filter-btn group border px-4 py-2 rounded-full text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-blue-500';
 
     if (isActive) {
         button.classList.add('bg-slate-800', 'text-white', 'border-transparent', 'dark:bg-slate-100', 'dark:text-slate-900');
@@ -246,18 +502,7 @@ function updateButtonStyle(button, isActive, theme = null) {
     }
 }
 
-/* ==================== THEME CONFIG ==================== */
-const themeConfig = {
-    'A': { name: 'Green-Digital', colorClass: 'text-themeA', bgClass: 'bg-themeA', borderClass: 'border-themeA' },
-    'B': { name: 'GenAI Education', colorClass: 'text-themeB', bgClass: 'bg-themeB', borderClass: 'border-themeB' },
-    'C': { name: 'Digital Justice', colorClass: 'text-themeC', bgClass: 'bg-themeC', borderClass: 'border-themeC' },
-    'D': { name: 'Industry & Net Zero', colorClass: 'text-themeD', bgClass: 'bg-themeD', borderClass: 'border-themeD' },
-    'E': { name: 'Talent', colorClass: 'text-themeE', bgClass: 'bg-themeE', borderClass: 'border-themeE' }
-};
-
 /* ==================== DATA ==================== */
-// Ordered by Deadline: Closest to 1 Jan 2026 -> Rolling/TBC
-// Core Areas: 'AI', 'Sust', 'Society'
 const fundingData = [
     // --- JAN 2026 ---
     {
@@ -290,7 +535,7 @@ const fundingData = [
         icon: 'fa-pen-ruler', color: 'themeA',
         url: 'https://www.ukri.org/opportunity/design-generators/'
     },
-    
+
     // --- FEB 2026 ---
     {
         themes: ['D'], core: ['AI', 'Sust'], funder: 'Innovate UK', title: 'Innovate UK Growth Catalyst',
@@ -326,11 +571,11 @@ const fundingData = [
     // --- MAR 2026 ---
     {
         themes: ['E', 'A', 'D'], core: ['AI', 'Sust'], funder: 'Royal Society', title: 'Industry Fellowships',
-        deadline: 'Mar 2026 (Round 1 Decisions)', scale: 'Salary buyout + expenses',
+        deadline: 'Mar 2026', scale: 'Salary buyout + expenses',
         fundingRule: '80% fEC',
         eligibility: 'Academic or Industry researchers.',
         limited: false,
-        desc: 'Supports mobility between academia and industry. Round 1 applications (Jul-Sep 2025) have decisions in March 2026.',
+        desc: 'Supports mobility between academia and industry. Verified 2026 Round 2 deadline.',
         icon: 'fa-handshake', color: 'themeE',
         url: 'https://royalsociety.org/grants/industry-fellowship/'
     },
@@ -384,7 +629,7 @@ const fundingData = [
         limited: false,
         desc: 'Twin Transition (Green + Digital) in manufacturing. AI-driven process optimisation and digital twins.',
         icon: 'fa-industry', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108419'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Climate-neutral%20and%20Digitised%20Production'
     },
     {
         themes: ['A', 'C'], core: ['AI', 'Society'], funder: 'Horizon Europe (Cluster 4)', title: 'Human-centred & Ethical Digital Tech',
@@ -394,17 +639,17 @@ const fundingData = [
         limited: false,
         desc: 'Trustworthy AI, ethics-by-design, and HCI. Frameworks for explainable AI.',
         icon: 'fa-users-gear', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108419'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Human-centred%20and%20Ethical%20Digital%20Tech'
     },
     {
-        themes: ['E', 'B', 'A'], core: ['Society', 'AI'], funder: 'AHRC / ESRC (UKRI)', title: 'Doctoral Focal Awards',
+        themes: ['E', 'B', 'A'], core: ['Society', 'AI'], funder: 'AHRC (UKRI)', title: 'Doctoral Focal Awards',
         deadline: '21 Apr 2026 (Outline)', scale: 'Institutional Grant',
         fundingRule: 'Standard UKRI',
         eligibility: 'UK HEIs (institutional bids for doctoral cohorts)',
         limited: false,
         desc: 'New structure for doctoral support replacing DTPs. Focal Awards target strategic areas, potentially including digital, AI, and sectoral skills. Institutional level application for studentship funding.',
         icon: 'fa-users-line', color: 'themeE',
-        url: 'https://www.ukri.org/opportunity/'
+        url: 'https://www.ukri.org/opportunity/apply-for-a-doctoral-focal-award-in-the-arts-and-humanities/'
     },
     {
         themes: ['A', 'D'], core: ['Sust', 'AI'], funder: 'Horizon Europe (Cluster 5)', title: 'Smart Grids & Digital Energy',
@@ -414,7 +659,7 @@ const fundingData = [
         limited: false,
         desc: 'Innovation Action for digitalising energy grids. Smart grid technologies.',
         icon: 'fa-bolt', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Smart%20Grids'
     },
     {
         themes: ['C'], core: ['Society', 'AI'], funder: 'Horizon Europe (Cluster 2)', title: 'Democracy & Governance',
@@ -424,7 +669,7 @@ const fundingData = [
         limited: false,
         desc: 'Addresses challenges to democracy, disinformation, and AI manipulation.',
         icon: 'fa-landmark', color: 'themeC',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Democracy%20and%20Governance'
     },
 
     // --- JUL-SEP 2026 ---
@@ -456,7 +701,7 @@ const fundingData = [
         limited: false,
         desc: 'Research technical, social & economic factors impacting energy performance.',
         icon: 'fa-building', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Energy%20Performance%20of%20Smart%20Buildings'
     },
     {
         themes: ['A', 'D'], core: ['Sust', 'AI'], funder: 'Horizon Europe (Cluster 5)', title: 'Data Platforms for Whole-Life Carbon',
@@ -466,7 +711,7 @@ const fundingData = [
         limited: false,
         desc: 'Advanced data platforms to integrate whole life carbon in building information tools.',
         icon: 'fa-database', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108420'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Data%20Platforms%20for%20Whole-Life%20Carbon'
     },
     {
         themes: ['C', 'E'], core: ['AI', 'Society'], funder: 'Horizon Europe (Cluster 2)', title: 'Fair Market for Creative Content (GenAI)',
@@ -476,7 +721,7 @@ const fundingData = [
         limited: false,
         desc: 'Fair market for cultural and creative content with generative AI.',
         icon: 'fa-palette', color: 'themeC',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Fair%20Market%20for%20Creative%20Content'
     },
     {
         themes: ['C'], core: ['Society'], funder: 'Horizon Europe (Cluster 2)', title: 'Electoral Integrity in Digital Context',
@@ -486,7 +731,7 @@ const fundingData = [
         limited: false,
         desc: 'Addressing electoral integrity challenges within the digital context.',
         icon: 'fa-vote-yea', color: 'themeC',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Electoral%20Integrity'
     },
     {
         themes: ['C'],
@@ -495,13 +740,13 @@ const fundingData = [
         title: 'Sustainable paths to media viability',
         deadline: '16 Sep 2026',
         scale: '€3.5–4m (IA)',
-        fundingRule: '100% Direct Costs + 25% Indirect', 
+        fundingRule: '100% Direct Costs + 25% Indirect',
         eligibility: 'Min. 3 legal entities. UK Eligible.',
         limited: false,
         desc: 'Innovation Action to design, test and scale sustainable business, funding and governance models for independent, pluralistic and trustworthy news/media, strengthening democratic resilience and countering disinformation.',
         icon: 'fa-newspaper',
         color: 'themeC',
-        url: 'https://horizoneuropencpportal.eu/news/draft-work-programmes-2026-2027-now-available'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Sustainable%20paths%20to%20media%20viability'
     },
 
     // --- OCT-DEC 2026 ---
@@ -513,7 +758,7 @@ const fundingData = [
         limited: false,
         desc: 'Enhancing perception, decision-making, and validation for smarter CCAM using Generative AI.',
         icon: 'fa-car', color: 'themeD',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Generative%20AI%20for%20Smarter%20CCAM'
     },
     {
         themes: ['A', 'D'], core: ['AI', 'Sust'], funder: 'Horizon Europe (Cluster 5)', title: 'Data Sharing for AI in Energy',
@@ -523,7 +768,7 @@ const fundingData = [
         limited: false,
         desc: 'Data sharing to support training and development of AI foundation models in the energy sector.',
         icon: 'fa-bolt', color: 'themeD',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Data%20Sharing%20for%20AI%20in%20Energy'
     },
 
     // --- ROLLING / OPEN ---
@@ -580,96 +825,118 @@ const fundingData = [
 ];
 
 /* ==================== CARD RENDERING ==================== */
-function createCard(item, index) {
+
+/**
+ * Create HTML markup for a funding opportunity card
+ * @param {Object} item - The funding opportunity data
+ * @returns {string} The HTML string for the card
+ */
+function createCard(item) {
     const primaryTheme = item.themes[0];
-    const cfg = themeConfig[primaryTheme];
+    const cfg = THEME_CONFIG[primaryTheme];
+
+    // Create theme tags with proper escaping
     const tags = item.themes.map(t => {
-        const tc = themeConfig[t];
-        return `<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded border ${tc.borderClass} ${tc.colorClass} bg-white dark:bg-slate-800 opacity-90">${t}</span>`;
+        const tc = THEME_CONFIG[t];
+        return `<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded border ${tc.borderClass} ${tc.colorClass} bg-white dark:bg-slate-800 opacity-90">${escapeHTML(t)}</span>`;
     }).join('');
 
-    // Pre-fill email data
-    const emailSubject = `Expression of Interest: ${item.title}`;
-    const emailBody = `Hi Paul-Scott,%0D%0A%0D%0AI am interested in applying for: ${item.title} (${item.funder}).%0D%0A%0D%0APlease schedule a scoping meeting.%0D%0A%0D%0ARegards,`;
+    // Properly encode email parameters
+    const emailSubject = encodeURIComponent(`Expression of Interest: ${item.title}`);
+    const emailBody = encodeURIComponent(`Hi Paul-Scott,\n\nI am interested in applying for: ${item.title} (${item.funder}).\n\nPlease schedule a scoping meeting.\n\nRegards,`);
 
-    const limitedBadge = item.limited 
-        ? `<div class="bg-lsbu/10 text-lsbu border border-lsbu/20 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider mb-2 inline-block"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Limited Submission</div>` 
+    const limitedBadge = item.limited
+        ? `<div class="bg-lsbu/10 text-lsbu border border-lsbu/20 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider mb-2 inline-block"><i class="fa-solid fa-triangle-exclamation mr-1" aria-hidden="true"></i> Limited Submission</div>`
         : '';
 
     return `
-    <article class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col h-full card-hover group">
-        <div class="absolute top-0 left-0 w-1 h-full ${cfg.bgClass}"></div>
-        
+    <article class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col h-full card-hover group card-enter">
+        <div class="absolute top-0 left-0 w-1 h-full ${cfg.bgClass}" aria-hidden="true"></div>
+
         <div class="p-5 flex-grow">
             <!-- Header -->
             <div class="flex justify-between items-start mb-2">
-                <div class="flex flex-wrap gap-1">${tags}</div>
-                <i class="fa-solid ${item.icon} text-slate-200 dark:text-slate-700 text-2xl group-hover:text-slate-300 transition"></i>
+                <div class="flex flex-wrap gap-1" role="list" aria-label="Theme tags">${tags}</div>
+                <i class="fa-solid ${escapeHTML(item.icon)} text-slate-200 dark:text-slate-700 text-2xl group-hover:text-slate-300 transition" aria-hidden="true"></i>
             </div>
 
             <!-- Funder & Title -->
             <h4 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1">
-                ${item.funder}
+                ${escapeHTML(item.funder)}
             </h4>
             <h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight mb-3">
-                <a href="${item.url}" target="_blank" class="hover:underline decoration-2 underline-offset-2 decoration-slate-300 dark:decoration-slate-600">
-                    ${item.title}
+                <a href="${escapeHTML(item.url)}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="hover:underline decoration-2 underline-offset-2 decoration-slate-300 dark:decoration-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
+                    ${escapeHTML(item.title)}
                 </a>
-                <i class="fa-solid fa-up-right-from-square ml-1 text-xs opacity-0 group-hover:opacity-100 transition text-slate-400"></i>
+                <i class="fa-solid fa-up-right-from-square ml-1 text-xs opacity-0 group-hover:opacity-100 transition text-slate-400" aria-hidden="true"></i>
             </h3>
 
             ${limitedBadge}
 
-            <!-- Description Blurb -->
+            <!-- Description -->
             <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed border-l-2 border-slate-100 dark:border-slate-700 pl-3 italic">
-                ${item.desc}
+                ${escapeHTML(item.desc)}
             </p>
-            
+
             <!-- Details Grid -->
-            <div class="text-xs space-y-2 bg-slate-50 dark:bg-slate-900 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
+            <dl class="text-xs space-y-2 bg-slate-50 dark:bg-slate-900 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
                 <div class="flex justify-between items-start gap-3 border-b border-slate-200 dark:border-slate-800 pb-1">
-                    <span class="font-semibold text-slate-500 shrink-0">Deadline</span>
-                    <span class="font-bold text-slate-800 dark:text-slate-200 text-right leading-tight">${item.deadline}</span>
+                    <dt class="font-semibold text-slate-500 shrink-0">Deadline</dt>
+                    <dd class="font-bold text-slate-800 dark:text-slate-200 text-right leading-tight">${escapeHTML(item.deadline)}</dd>
                 </div>
                 <div class="flex justify-between items-start gap-3 border-b border-slate-200 dark:border-slate-800 pb-1">
-                    <span class="font-semibold text-slate-500 shrink-0">Award Amount</span>
-                    <span class="font-medium text-slate-700 dark:text-slate-300 text-right">${item.scale}</span>
+                    <dt class="font-semibold text-slate-500 shrink-0">Award Amount</dt>
+                    <dd class="font-medium text-slate-700 dark:text-slate-300 text-right">${escapeHTML(item.scale)}</dd>
                 </div>
                 <div class="flex justify-between items-start gap-3 border-b border-slate-200 dark:border-slate-800 pb-1">
-                    <span class="font-semibold text-slate-500 shrink-0">Funding Model</span>
-                    <span class="font-medium text-slate-700 dark:text-slate-300 text-right leading-tight">${item.fundingRule}</span>
+                    <dt class="font-semibold text-slate-500 shrink-0">Funding Model</dt>
+                    <dd class="font-medium text-slate-700 dark:text-slate-300 text-right leading-tight">${escapeHTML(item.fundingRule)}</dd>
                 </div>
                 <div class="pt-1">
-                    <span class="font-semibold text-slate-500 block mb-0.5">Eligibility</span>
-                    <span class="font-medium text-slate-700 dark:text-slate-300 leading-tight block">${item.eligibility}</span>
+                    <dt class="font-semibold text-slate-500 block mb-0.5">Eligibility</dt>
+                    <dd class="font-medium text-slate-700 dark:text-slate-300 leading-tight block">${escapeHTML(item.eligibility)}</dd>
                 </div>
-            </div>
+            </dl>
         </div>
 
         <!-- Action Footer -->
         <div class="px-5 py-3 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-             <a href="mailto:${CONTACT_EMAIL}?subject=${emailSubject}&body=${emailBody}" 
-               class="block w-full text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 hover:border-slate-400 hover:text-slate-800 dark:hover:text-slate-100 text-slate-500 dark:text-slate-400 text-xs font-semibold py-2 rounded transition shadow-sm">
-                <i class="fa-regular fa-envelope mr-1"></i> Express Interest
+             <a href="mailto:${CONFIG.CONTACT_EMAIL}?subject=${emailSubject}&body=${emailBody}"
+               class="block w-full text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 hover:border-slate-400 hover:text-slate-800 dark:hover:text-slate-100 text-slate-500 dark:text-slate-400 text-xs font-semibold py-2 rounded transition shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <i class="fa-regular fa-envelope mr-1" aria-hidden="true"></i> Express Interest
             </a>
         </div>
     </article>`;
 }
 
-/* ==================== FILTER & SEARCH ==================== */
+/* ==================== FILTERING & SEARCH ==================== */
+
+/**
+ * Filter cards by strategic theme
+ * @param {string} theme - The theme to filter by ('all' or A-E)
+ */
 function filterCards(theme) {
-    // Reset Core buttons first
-    document.querySelectorAll('.core-btn').forEach(btn => {
-        btn.classList.remove('core-active', 'opacity-100');
-        btn.classList.add('opacity-70');
-        btn.setAttribute('aria-pressed', 'false');
-    });
+    currentFilter = theme;
+    currentSearchTerm = '';
 
-    const filtered = theme === 'all' ? fundingData : fundingData.filter(i => i.themes.includes(theme));
+    // Clear search input
+    const searchInput = document.getElementById('search');
+    if (searchInput) searchInput.value = '';
 
-    // Update Theme Buttons using helper function
+    // Reset Core buttons
+    resetCoreButtons();
+
+    // Filter data
+    const filtered = theme === 'all'
+        ? fundingData
+        : fundingData.filter(item => item.themes.includes(theme));
+
+    // Update Theme Buttons using data attributes
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        const btnTheme = btn.textContent.includes('All') ? 'all' : btn.getAttribute('onclick').match(/'([A-E])'/)[1];
+        const btnTheme = btn.getAttribute('data-theme');
         const isActive = theme === btnTheme;
         updateButtonStyle(btn, isActive, btnTheme);
     });
@@ -677,19 +944,26 @@ function filterCards(theme) {
     renderCards(filtered);
 }
 
+/**
+ * Filter cards by core focus area
+ * @param {string} coreArea - The core area to filter by (AI, Sust, Society)
+ */
 function filterByCore(coreArea) {
-    // Reset Theme Buttons to default state using helper function
+    currentFilter = `core-${coreArea}`;
+    currentSearchTerm = '';
+
+    // Clear search input
+    const searchInput = document.getElementById('search');
+    if (searchInput) searchInput.value = '';
+
+    // Reset Theme Buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        const btnTheme = btn.textContent.includes('All') ? 'all' : btn.getAttribute('onclick').match(/'([A-E])'/)[1];
+        const btnTheme = btn.getAttribute('data-theme');
         updateButtonStyle(btn, false, btnTheme);
     });
 
-    // Update Core Buttons
-    document.querySelectorAll('.core-btn').forEach(btn => {
-        btn.classList.remove('core-active', 'opacity-100');
-        btn.classList.add('opacity-70');
-        btn.setAttribute('aria-pressed', 'false');
-    });
+    // Reset and update Core Buttons
+    resetCoreButtons();
 
     const activeBtn = document.getElementById(`btn-core-${coreArea}`);
     if (activeBtn) {
@@ -698,73 +972,242 @@ function filterByCore(coreArea) {
         activeBtn.setAttribute('aria-pressed', 'true');
     }
 
-    // Filter Logic
+    // Filter data
     const filtered = fundingData.filter(item => item.core && item.core.includes(coreArea));
     renderCards(filtered);
 }
 
+/**
+ * Reset all core focus area buttons to default state
+ */
+function resetCoreButtons() {
+    document.querySelectorAll('.core-btn').forEach(btn => {
+        btn.classList.remove('core-active', 'opacity-100');
+        btn.classList.add('opacity-70');
+        btn.setAttribute('aria-pressed', 'false');
+    });
+}
+
+/**
+ * Search cards based on user input
+ */
 function searchCards() {
-    const term = document.getElementById('search').value.toLowerCase();
-    const filtered = fundingData.filter(item =>
-        item.title.toLowerCase().includes(term) ||
-        item.funder.toLowerCase().includes(term) ||
-        item.desc.toLowerCase().includes(term)
-    );
+    const searchInput = document.getElementById('search');
+    if (!searchInput) return;
+
+    currentSearchTerm = searchInput.value.toLowerCase().trim();
+
+    // Reset filters when searching
+    if (currentSearchTerm) {
+        currentFilter = 'search';
+        resetCoreButtons();
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            const btnTheme = btn.getAttribute('data-theme');
+            updateButtonStyle(btn, false, btnTheme);
+        });
+    }
+
+    const filtered = currentSearchTerm
+        ? fundingData.filter(item =>
+            item.title.toLowerCase().includes(currentSearchTerm) ||
+            item.funder.toLowerCase().includes(currentSearchTerm) ||
+            item.desc.toLowerCase().includes(currentSearchTerm) ||
+            item.eligibility.toLowerCase().includes(currentSearchTerm)
+        )
+        : fundingData;
+
     renderCards(filtered);
 }
 
-// Debounced version of searchCards (300ms delay)
-const debouncedSearch = debounce(searchCards, 300);
-
-function renderCards(data) {
-    document.getElementById('cards-grid').innerHTML = data.map((item) => {
-        const originalIndex = fundingData.indexOf(item);
-        return createCard(item, originalIndex);
-    }).join('');
-}
-
-function exportCSV() {
-    try {
-        let csv = "Funder,Title,Deadline,Scale,FundingRule,LimitedSubmission,Themes,CoreAreas,Description,URL\n";
-        fundingData.forEach(item => {
-            const core = item.core ? item.core.join('|') : '';
-            csv += `"${item.funder}","${item.title.replace(/"/g, '""')}","${item.deadline}","${item.scale}","${item.fundingRule}","${item.limited ? 'Yes' : 'No'}","${item.themes.join('|')}","${core}","${item.desc.replace(/"/g, '""')}","${item.url}"\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = "LSBU_Funding_Matrix_Q1_2026.csv";
-        a.click();
-        URL.revokeObjectURL(url);
-    } catch (error) {
-        console.error('Error exporting CSV:', error);
-        alert('Failed to export CSV file. Please try again.');
+/**
+ * Handle search input for accessibility
+ */
+function handleSearchInput() {
+    const searchInput = document.getElementById('search');
+    if (searchInput && searchInput.value.trim()) {
+        searchInput.setAttribute('aria-busy', 'true');
     }
 }
 
+/**
+ * Debounced search function
+ */
+const debouncedSearch = debounce(() => {
+    searchCards();
+    const searchInput = document.getElementById('search');
+    if (searchInput) {
+        searchInput.setAttribute('aria-busy', 'false');
+    }
+}, CONFIG.DEBOUNCE_DELAY);
+
+/**
+ * Reset all filters to show all cards
+ */
+function resetFilters() {
+    currentFilter = 'all';
+    currentSearchTerm = '';
+    const searchInput = document.getElementById('search');
+    if (searchInput) searchInput.value = '';
+    filterCards('all');
+    showToast('Filters reset - showing all opportunities', 'info');
+}
+
+/**
+ * Render filtered cards to the DOM with animations
+ * @param {Array} data - The filtered funding data to render
+ */
+function renderCards(data) {
+    const grid = document.getElementById('cards-grid');
+    const emptyState = document.getElementById('empty-state');
+    const resultsCounter = document.getElementById('results-counter');
+
+    if (!grid) return;
+
+    if (data.length === 0) {
+        // Show empty state
+        grid.innerHTML = '';
+        if (emptyState) {
+            emptyState.classList.remove('hidden');
+        }
+        if (resultsCounter) {
+            resultsCounter.textContent = 'No results found';
+        }
+    } else {
+        // Hide empty state
+        if (emptyState) {
+            emptyState.classList.add('hidden');
+        }
+
+        // Render cards
+        grid.innerHTML = data.map(item => createCard(item)).join('');
+
+        // Update results counter
+        if (resultsCounter) {
+            const plural = data.length === 1 ? 'opportunity' : 'opportunities';
+            resultsCounter.textContent = `Showing ${data.length} funding ${plural}`;
+        }
+    }
+
+    // Announce to screen readers
+    const message = data.length === 0
+        ? 'No funding opportunities found'
+        : `${data.length} funding ${data.length === 1 ? 'opportunity' : 'opportunities'} found`;
+
+    grid.setAttribute('aria-label', message);
+}
+
+/* ==================== EXPORT FUNCTIONS ==================== */
+
+/**
+ * Export funding data as CSV file
+ */
+function exportCSV() {
+    try {
+        let csv = "Funder,Title,Deadline,Scale,FundingRule,LimitedSubmission,Themes,CoreAreas,Description,URL\n";
+
+        fundingData.forEach(item => {
+            const core = item.core ? item.core.join('|') : '';
+            const row = [
+                item.funder,
+                item.title,
+                item.deadline,
+                item.scale,
+                item.fundingRule,
+                item.limited ? 'Yes' : 'No',
+                item.themes.join('|'),
+                core,
+                item.desc,
+                item.url
+            ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(',');
+
+            csv += row + '\n';
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        downloadFile(blob, `${CONFIG.EXPORT_FILENAME_PREFIX}.csv`);
+        showToast(`CSV exported: ${fundingData.length} opportunities`, 'success');
+    } catch (error) {
+        console.error('Error exporting CSV:', error);
+        showToast('Failed to export CSV. Please try again.', 'error');
+    }
+}
+
+/**
+ * Export funding data as JSON file
+ */
 function exportJSON() {
     try {
         const json = JSON.stringify(fundingData, null, 2);
         const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = "LSBU_Funding_Matrix_Q1_2026.json";
-        a.click();
-        URL.revokeObjectURL(url);
+        downloadFile(blob, `${CONFIG.EXPORT_FILENAME_PREFIX}.json`);
+        showToast(`JSON exported: ${fundingData.length} opportunities`, 'success');
     } catch (error) {
         console.error('Error exporting JSON:', error);
-        alert('Failed to export JSON file. Please try again.');
+        showToast('Failed to export JSON. Please try again.', 'error');
     }
 }
 
-/* ==================== INIT ==================== */
-// Initialize dark mode from localStorage
-initDarkMode();
+/**
+ * Helper function to trigger file download
+ * @param {Blob} blob - The blob data to download
+ * @param {string} filename - The filename for the download
+ */
+function downloadFile(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
 
-// Initialize cards display
-filterCards('all');
+    // Cleanup
+    setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }, 100);
+}
+
+/* ==================== INITIALIZATION ==================== */
+
+/**
+ * Initialize the application
+ */
+function init() {
+    // Validate funding data
+    if (!validateFundingData(fundingData)) {
+        console.error('Invalid funding data structure detected');
+        showToast('Error loading funding data', 'error');
+        return;
+    }
+
+    // Initialize dark mode
+    initDarkMode();
+
+    // Initialize cards display
+    filterCards('all');
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        // Escape key resets filters
+        if (e.key === 'Escape' && (currentFilter !== 'all' || currentSearchTerm)) {
+            e.preventDefault();
+            resetFilters();
+        }
+    });
+
+    // Console log for developers
+    console.log(`✅ LSBU Funding Matrix loaded: ${fundingData.length} opportunities`);
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+
 </script>
 </body>
 </html>
