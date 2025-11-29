@@ -19,19 +19,10 @@
 
     <title>D x D Research Funding Matrix: Q1 2026</title>
 
-    <!-- External Resources with SRI and Error Handling -->
-    <script src="https://cdn.tailwindcss.com"
-            integrity="sha384-T5jhQKMa2qO7dq0akZ2wSiLJL7l6HvIx2A0KiXV5LPPzZ3xBxLQ5C6tY1f2B6TfQ"
-            crossorigin="anonymous"
-            onerror="handleCDNError('Tailwind CSS')"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-          rel="stylesheet"
-          integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw=="
-          crossorigin="anonymous"
-          onerror="handleCDNError('Font Awesome')">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
-          rel="stylesheet"
-          onerror="handleCDNError('Google Fonts')">
+    <!-- External Resources -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <script>
         // Tailwind Configuration
@@ -431,18 +422,6 @@ function showToast(message, type = 'info') {
 }
 
 /**
- * Handle CDN loading errors gracefully
- * @param {string} resourceName - Name of the resource that failed to load
- */
-function handleCDNError(resourceName) {
-    console.error(`Failed to load ${resourceName} from CDN`);
-    // Fallback: show a subtle warning but don't break the experience
-    setTimeout(() => {
-        showToast(`Some ${resourceName} features may be limited`, 'error');
-    }, 1000);
-}
-
-/**
  * Escape HTML to prevent XSS attacks
  * @param {string} str - The string to escape
  * @returns {string} The escaped string
@@ -592,11 +571,11 @@ const fundingData = [
     // --- MAR 2026 ---
     {
         themes: ['E', 'A', 'D'], core: ['AI', 'Sust'], funder: 'Royal Society', title: 'Industry Fellowships',
-        deadline: 'Mar 2026 (Round 1 Decisions)', scale: 'Salary buyout + expenses',
+        deadline: 'Mar 2026', scale: 'Salary buyout + expenses',
         fundingRule: '80% fEC',
         eligibility: 'Academic or Industry researchers.',
         limited: false,
-        desc: 'Supports mobility between academia and industry. Round 1 applications (Jul-Sep 2025) have decisions in March 2026.',
+        desc: 'Supports mobility between academia and industry. Verified 2026 Round 2 deadline.',
         icon: 'fa-handshake', color: 'themeE',
         url: 'https://royalsociety.org/grants/industry-fellowship/'
     },
@@ -650,7 +629,7 @@ const fundingData = [
         limited: false,
         desc: 'Twin Transition (Green + Digital) in manufacturing. AI-driven process optimisation and digital twins.',
         icon: 'fa-industry', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108419'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Climate-neutral%20and%20Digitised%20Production'
     },
     {
         themes: ['A', 'C'], core: ['AI', 'Society'], funder: 'Horizon Europe (Cluster 4)', title: 'Human-centred & Ethical Digital Tech',
@@ -660,7 +639,7 @@ const fundingData = [
         limited: false,
         desc: 'Trustworthy AI, ethics-by-design, and HCI. Frameworks for explainable AI.',
         icon: 'fa-users-gear', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108419'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Human-centred%20and%20Ethical%20Digital%20Tech'
     },
     {
         themes: ['E', 'B', 'A'], core: ['Society', 'AI'], funder: 'AHRC / ESRC (UKRI)', title: 'Doctoral Focal Awards',
@@ -680,7 +659,7 @@ const fundingData = [
         limited: false,
         desc: 'Innovation Action for digitalising energy grids. Smart grid technologies.',
         icon: 'fa-bolt', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Smart%20Grids'
     },
     {
         themes: ['C'], core: ['Society', 'AI'], funder: 'Horizon Europe (Cluster 2)', title: 'Democracy & Governance',
@@ -690,7 +669,7 @@ const fundingData = [
         limited: false,
         desc: 'Addresses challenges to democracy, disinformation, and AI manipulation.',
         icon: 'fa-landmark', color: 'themeC',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Democracy%20and%20Governance'
     },
 
     // --- JUL-SEP 2026 ---
@@ -722,7 +701,7 @@ const fundingData = [
         limited: false,
         desc: 'Research technical, social & economic factors impacting energy performance.',
         icon: 'fa-building', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Energy%20Performance%20of%20Smart%20Buildings'
     },
     {
         themes: ['A', 'D'], core: ['Sust', 'AI'], funder: 'Horizon Europe (Cluster 5)', title: 'Data Platforms for Whole-Life Carbon',
@@ -732,7 +711,7 @@ const fundingData = [
         limited: false,
         desc: 'Advanced data platforms to integrate whole life carbon in building information tools.',
         icon: 'fa-database', color: 'themeA',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108420'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Data%20Platforms%20for%20Whole-Life%20Carbon'
     },
     {
         themes: ['C', 'E'], core: ['AI', 'Society'], funder: 'Horizon Europe (Cluster 2)', title: 'Fair Market for Creative Content (GenAI)',
@@ -742,7 +721,7 @@ const fundingData = [
         limited: false,
         desc: 'Fair market for cultural and creative content with generative AI.',
         icon: 'fa-palette', color: 'themeC',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Fair%20Market%20for%20Creative%20Content'
     },
     {
         themes: ['C'], core: ['Society'], funder: 'Horizon Europe (Cluster 2)', title: 'Electoral Integrity in Digital Context',
@@ -752,7 +731,7 @@ const fundingData = [
         limited: false,
         desc: 'Addressing electoral integrity challenges within the digital context.',
         icon: 'fa-vote-yea', color: 'themeC',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108405'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Electoral%20Integrity'
     },
     {
         themes: ['C'],
@@ -767,7 +746,7 @@ const fundingData = [
         desc: 'Innovation Action to design, test and scale sustainable business, funding and governance models for independent, pluralistic and trustworthy news/media, strengthening democratic resilience and countering disinformation.',
         icon: 'fa-newspaper',
         color: 'themeC',
-        url: 'https://horizoneuropencpportal.eu/news/draft-work-programmes-2026-2027-now-available'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Sustainable%20paths%20to%20media%20viability'
     },
 
     // --- OCT-DEC 2026 ---
@@ -779,7 +758,7 @@ const fundingData = [
         limited: false,
         desc: 'Enhancing perception, decision-making, and validation for smarter CCAM using Generative AI.',
         icon: 'fa-car', color: 'themeD',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Generative%20AI%20for%20Smarter%20CCAM'
     },
     {
         themes: ['A', 'D'], core: ['AI', 'Sust'], funder: 'Horizon Europe (Cluster 5)', title: 'Data Sharing for AI in Energy',
@@ -789,7 +768,7 @@ const fundingData = [
         limited: false,
         desc: 'Data sharing to support training and development of AI foundation models in the energy sector.',
         icon: 'fa-bolt', color: 'themeD',
-        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?programmePeriod=2021%20-%202027&frameworkProgramme=43108390&programmePart=43108420'
+        url: 'https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search?tenders=false&forthcoming=true&closed=false&text=Data%20Sharing%20for%20AI%20in%20Energy'
     },
 
     // --- ROLLING / OPEN ---
