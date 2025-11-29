@@ -568,6 +568,8 @@ const fundingData = [
         desc: 'High-risk, high-reward research into environmental challenges. Encourages speculative applications of AI in ecology or earth observation. Verified 2026 call.',
         icon: 'fa-rocket', color: 'themeA',
         url: 'https://www.find-government-grants.service.gov.uk/grants/pushing-the-frontiers-of-environmental-research-january-2026-grant-1#summary'
+        icon: 'fa-rocket', color: 'themeA',
+        url: 'https://www.ukri.org/opportunity/pushing-the-frontiers-of-environmental-research-january-2026/'
     },
     {
         themes: ['A', 'E'], core: ['AI'], funder: 'EPSRC (UKRI)', title: 'Turing AI Global Fellowships',
@@ -620,6 +622,8 @@ const fundingData = [
         desc: 'Supports adventurous, large-scale environmental science. Proposals utilizing digital twins for climate modeling or environmental data infrastructure are highly favoured.',
         icon: 'fa-mountain', color: 'themeA',
         url: 'https://www.ukri.org/opportunity/nerc-large-grants/'
+        icon: 'fa-mountain', color: 'themeA',
+        url: 'https://www.ukri.org/opportunity/large-grant-outlines-february-2026/'
     },
 
     // --- MAR 2026 ---
@@ -631,7 +635,7 @@ const fundingData = [
         limited: false,
         desc: 'Supports mobility between academia and industry. Verified 2026 Round 2 deadline.',
         icon: 'fa-handshake', color: 'themeE',
-        url: 'https://royalsociety.org/grants/industry-fellowship/'
+        url: 'https://royalsociety.org/grants/industry-fellowships/'
     },
     {
         themes: ['B', 'C'], core: ['Society', 'AI'], funder: 'Nuffield Foundation', title: 'Strategic Fund',
@@ -651,7 +655,7 @@ const fundingData = [
         limited: false,
         desc: 'Fellowships for activists, researchers, and coders working on "Trustworthy AI" and internet health.',
         icon: 'fa-globe', color: 'themeC',
-        url: 'https://foundation.mozilla.org/en/fellowships/'
+        url: 'https://www.mozillafoundation.org/en/what-we-do/grantmaking/fellowship/2026-nominations-request/'
     },
 
     // --- APR 2026 ---
@@ -745,7 +749,7 @@ const fundingData = [
         limited: true,
         desc: 'The premier UK fellowship for early-career scientists. Supports outstanding scientists in the UK to build an independent research career. Ideal for AI/Net Zero stars. Outcomes: development of a future research leader.',
         icon: 'fa-user-graduate', color: 'themeE',
-        url: 'https://royalsociety.org/grants/university-research-fellowships/'
+        url: 'https://royalsociety.org/grants/university-research/'
     },
     {
         themes: ['A', 'D'], core: ['Sust'], funder: 'Horizon Europe (Cluster 5)', title: 'Energy Performance of Smart Buildings',
@@ -834,7 +838,7 @@ const fundingData = [
         limited: false,
         desc: 'Builds digital humanities, archives and data cultures via international placements.',
         icon: 'fa-passport', color: 'themeE',
-        url: 'https://www.ukri.org/opportunity/international-placement-scheme/'
+        url: 'https://www.ukri.org/opportunity/international-placement-scheme-2026/'
     },
     {
         themes: ['A'], core: ['Sust', 'AI'], funder: 'EPSRC', title: 'EPSRC Standard Research Grant',
@@ -854,7 +858,7 @@ const fundingData = [
         limited: false,
         desc: 'Builds evidence base for ESRC/Nuffield bids.',
         icon: 'fa-flask', color: 'themeB',
-        url: 'https://www.jisc.ac.uk/ai'
+        url: 'https://www.jisc.ac.uk/innovation/artificial-intelligence'
     },
     {
         themes: ['C', 'E'], core: ['AI', 'Society'], funder: 'UKRI / JST (Japan)', title: 'Japan–UK AI Joint Call',
@@ -864,7 +868,7 @@ const fundingData = [
         limited: false,
         desc: 'Human-Centred AI. Social/ethical / human–robot interaction.',
         icon: 'fa-handshake-angle', color: 'themeC',
-        url: 'https://www.ukri.org/opportunity/japan-uk-collaborative-call-on-artificial-intelligence/'
+        url: 'https://www.ukri.org/opportunity/japan-uk-joint-call-for-collaborations-in-advancing-human-centred-ai/'
     },
     {
         themes: ['A','D'], core: ['AI', 'Sust'], funder: 'Innovate UK', title: 'Transport Research & Innovation Grants (TRIG)',
@@ -923,7 +927,7 @@ function createCard(item, options = {}) {
                 ${escapeHTML(item.funder)}
             </h4>
             <h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight mb-3">
-                <a href="${escapeHTML(item.url)}"
+                <a href="${item.url}"
                    target="_blank"
                    rel="noopener noreferrer"
                    class="hover:underline decoration-2 underline-offset-2 decoration-slate-300 dark:decoration-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
