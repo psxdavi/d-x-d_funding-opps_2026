@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LSBU Grant Journey – TfL Layout</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f7f7f9;
+      --panel-bg: #ffffff;
+      --border: #d0d3da;
+      --text-main: #222222;
+      --text-muted: #666666;
+      --accent: #0052a3;
+      --core: #e32017;     /* Central (Core Approvals) */
+      --ethics: #000000;   /* Northern (Ethics & Governance) */
+      --finance: #1c3f94;  /* Piccadilly (Finance & Costing) */
+      --partners: #f4c300; /* District (Partnerships & Due Diligence) */
+      --proposal: #003688; /* Metropolitan (Proposal Development) */
+      --docs: #9b9b9b;     /* Jubilee (Documentation & Systems) */
+      --critical: #dc2626;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 1.3rem 1.1rem 2rem;
+    }
+
+    header h1 {
+      margin: 0 0 0.25rem;
+      font-size: 1.55rem;
+      font-weight: 650;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .badge-row {
+      margin-top: 0.4rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+    }
+
+    .badge {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.6rem;
+      background: #fff;
+    }
+
+    .controls {
+      margin: 1.1rem 0 0.9rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2.4rem;
+      align-items: center;
+      font-size: 0.88rem;
+    }
+
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .controls input[type="checkbox"] {
+      transform: translateY(1px);
+      cursor: pointer;
+    }
+
+    .controls-range {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .controls-range span {
+      font-weight: 600;
+      min-width: 90px;
+    }
+
+    input[type="range"] {
+      accent-color: var(--accent);
+      cursor: pointer;
+      min-width: 200px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(290px, 1fr);
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .map-panel, .detail-panel {
+      background: var(--panel-bg);
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      padding: 0.8rem 0.9rem 0.9rem;
+      position: relative;
+    }
+
+    .detail-panel {
+      position: sticky;
+      top: 1rem;
+    }
+
+    .map-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.4rem;
+    }
+
+    .map-panel-header h2 {
+      margin: 0;
+      font-size: 0.96rem;
+      font-weight: 600;
+    }
+
+    .map-panel-header p {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    svg#grant-map {
+      width: 100%;
+      height: 480px;
+      display: block;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      margin-top: 0.35rem;
+      padding-top: 0.45rem;
+      border-top: 1px dashed var(--border);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .legend-swatch {
+      width: 20px;
+      height: 4px;
+      border-radius: 999px;
+    }
+
+    .detail-panel h2 {
+      margin: 0 0 0.3rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .detail-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-section-title {
+      margin: 0.8rem 0 0.3rem;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+
+    .detail-body {
+      font-size: 0.85rem;
+      color: var(--text-main);
+    }
+
+    .detail-body ul {
+      margin: 0.2rem 0;
+      padding-left: 1.1rem;
+    }
+
+    .detail-body li {
+      margin-bottom: 0.3rem;
+    }
+
+    .pro-tip {
+      margin-top: 0.6rem;
+      padding: 0.5rem 0.65rem;
+      border-radius: 0.5rem;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      font-size: 0.8rem;
+    }
+
+    .pro-tip strong {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #0369a1;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    /* SVG Styles */
+    .line-path {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: opacity 0.3s ease, stroke-width 0.3s ease;
+    }
+
+    .station-group {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .station-circle {
+      transition: all 0.2s ease;
+    }
+
+    .station-group:hover .station-circle {
+      r: 7;
+      stroke-width: 3;
+    }
+
+    .station-group:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .station-group.selected .station-circle {
+      stroke-width: 4;
+      filter: drop-shadow(0 0 4px rgba(0,0,0,0.3));
+    }
+
+    .station-label {
+      font-size: 9px;
+      fill: #333;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .week-marker {
+      font-size: 13px;
+      font-weight: 700;
+      fill: var(--text-muted);
+    }
+
+    .critical-indicator {
+      fill: var(--critical);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .fade-out {
+      opacity: 0.15;
+    }
+
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      svg#grant-map { height: 420px; }
+      .detail-panel { position: static; }
+    }
+
+    @media (max-width: 640px) {
+      .controls { flex-direction: column; align-items: flex-start; }
+      .controls-range { width: 100%; }
+      input[type="range"] { width: 100%; }
+      svg#grant-map { height: 360px; }
+      header h1 { font-size: 1.3rem; }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>LSBU Research Grant Application Journey</h1>
+    <p>TfL‑style schematic of the 8‑week route to submission</p>
+    <div class="badge-row">
+      <span class="badge">8 weeks to submission</span>
+      <span class="badge">6 Process Lines</span>
+      <span class="badge">Interactive Journey Map</span>
+    </div>
+  </header>
+
+  <section class="controls" role="group" aria-label="Journey visualization controls">
+    <label class="controls-group">
+      <input type="checkbox" id="core-only-toggle" aria-label="Emphasize central core approvals line" />
+      <span>Emphasise Central (Core Approvals) Line</span>
+    </label>
+    <label class="controls-group">
+      <input type="checkbox" id="critical-only-toggle" aria-label="Show only critical milestones" />
+      <span>Show critical milestones only</span>
+    </label>
+    <div class="controls-range">
+      <label for="week-range">
+        <span id="week-label">Week 8 of 8</span>
+      </label>
+      <input
+        type="range"
+        id="week-range"
+        min="1"
+        max="8"
+        value="8"
+        aria-label="Select week to view"
+        aria-valuemin="1"
+        aria-valuemax="8"
+        aria-valuenow="8"
+        aria-valuetext="Week 8 of 8"
+      />
+    </div>
+  </section>
+
+  <section class="layout">
+    <section class="map-panel">
+      <div class="map-panel-header">
+        <h2>Grant Application Network Map</h2>
+        <p>Click a station for details • Weeks run right (8) to left (1)</p>
+      </div>
+      <svg id="grant-map" viewBox="0 0 1000 480" aria-label="LSBU grant journey map" role="img">
+        <title>LSBU Grant Application Journey Map</title>
+        <desc>An interactive tube map showing the 8-week grant application process across six parallel workstreams</desc>
+      </svg>
+      <div class="legend" id="legend" role="list" aria-label="Process line legend"></div>
+    </section>
+
+    <aside class="detail-panel" id="detail-panel" role="complementary" aria-live="polite">
+      <h2>Initial Contact</h2>
+      <div id="detail-meta" class="detail-meta">
+        Week 8 • Owner: Principal Investigator
+      </div>
+      <div id="detail-body" class="detail-body">
+        <p>Use the slider to move through the weeks, then click a station to see LSBU expectations and ownership at that point.</p>
+      </div>
+    </aside>
+  </section>
+</div>
+
+<script>
+'use strict';
+
+/* ==================== CONFIGURATION ==================== */
+const CONFIG = {
+  SVG: {
+    WIDTH: 1000,
+    HEIGHT: 480,
+    STATION_RADIUS: 5,
+    STATION_STROKE: 2,
+    LINE_WIDTH: 5,
+    WEEK_SPACING: 140,
+    START_X: 100
+  },
+  COLORS: {
+    core: '#e32017',
+    ethics: '#000000',
+    finance: '#1c3f94',
+    partners: '#f4c300',
+    proposal: '#003688',
+    docs: '#9b9b9b'
+  }
+};
+
+/* ==================== DATA ==================== */
+const lines = [
+  { id: "central", name: "Central Line (Core Approvals)", color: CONFIG.COLORS.core, yBase: 320 },
+  { id: "northern", name: "Northern Line (Ethics & Governance)", color: CONFIG.COLORS.ethics, yBase: 90 },
+  { id: "piccadilly", name: "Piccadilly Line (Finance & Costing)", color: CONFIG.COLORS.finance, yBase: 230 },
+  { id: "district", name: "District Line (Partnerships & Due Diligence)", color: CONFIG.COLORS.partners, yBase: 380 },
+  { id: "metropolitan", name: "Metropolitan Line (Proposal Development)", color: CONFIG.COLORS.proposal, yBase: 140 },
+  { id: "jubilee", name: "Jubilee Line (Documentation & Systems)", color: CONFIG.COLORS.docs, yBase: 280 }
+];
+
+const stations = [
+  // Week 8
+  { id: "initial-contact", label: "Initial Contact", line: "central", week: 8, yOffset: 0, critical: true,
+    owner: "PI", overview: "First touchpoint with a funding opportunity; confirm fit with LSBU priorities.",
+    checklist: [
+      "Check call fit and eligibility",
+      "Gauge indicative success rate",
+      "Decide if a consortium is needed"
+    ],
+    proTip: "Treat this as the moment that determines whether to proceed. Early assessment saves time and resources."
+  },
+  { id: "partner-details", label: "Partner Details", line: "district", week: 8, yOffset: 0, critical: false,
+    owner: "PI", overview: "Gather essential information for potential partners.",
+    checklist: [
+      "Identify potential external partners",
+      "Request partner organisation details",
+      "Agree on roles and responsibilities"
+    ],
+    proTip: "Clear communication with partners from the outset prevents later delays."
+  },
+
+  // Week 7
+  { id: "budget-planning", label: "Budget Planning", line: "piccadilly", week: 7, yOffset: 0, critical: true,
+    owner: "Finance Team", overview: "Initial budget estimation and resource allocation.",
+    checklist: [
+      "Estimate direct and indirect costs",
+      "Allocate resources (staff, equipment)",
+      "Identify potential funding gaps"
+    ],
+    proTip: "A realistic budget is crucial for project viability and funder approval."
+  },
+  { id: "planner-meeting", label: "Planner Meeting", line: "central", week: 7, yOffset: 0, critical: false,
+    owner: "PI, Research Support", overview: "Meet with grant planners to discuss strategy and timeline.",
+    checklist: [
+      "Discuss grant call specifics",
+      "Outline project plan and milestones",
+      "Agree on a submission timeline"
+    ],
+    proTip: "Leverage the expertise of grant planners early for strategic guidance."
+  },
+  { id: "due-diligence-w7", label: "Due Diligence", line: "district", week: 7, yOffset: 0, critical: true,
+    owner: "Partnerships Team", overview: "Conduct initial due diligence on identified partners.",
+    checklist: [
+      "Review partner organisational structure",
+      "Assess financial stability of partners",
+      "Confirm legal and ethical compliance"
+    ],
+    proTip: "Thorough due diligence protects LSBU and the project from future risks."
+  },
+
+  // Week 6
+  { id: "haplo-setup", label: "HAPLO Setup", line: "central", week: 6, yOffset: -40, critical: true,
+    owner: "Research Support", overview: "Set up the project in the HAPLO system.",
+    checklist: [
+      "Create project record in HAPLO",
+      "Input basic project details",
+      "Assign relevant internal stakeholders"
+    ],
+    proTip: "Early HAPLO setup streamlines internal approvals and tracking."
+  },
+  { id: "haplo-setup-jubilee", label: "HAPLO (Docs)", line: "jubilee", week: 6, yOffset: 0, critical: true,
+    owner: "Research Support", overview: "Detailed HAPLO setup, including document uploads.",
+    checklist: [
+      "Upload initial project documents",
+      "Ensure all required fields are completed",
+      "Verify access for key personnel"
+    ],
+    proTip: "A complete HAPLO record ensures all compliance and reporting requirements are met."
+  },
+  { id: "internal-review", label: "Internal Review", line: "metropolitan", week: 6, yOffset: 0, critical: false,
+    owner: "PI, Internal Reviewers", overview: "Circulate initial proposal draft for internal feedback.",
+    checklist: [
+      "Identify internal reviewers",
+      "Set clear deadlines for feedback",
+      "Incorporate feedback into the proposal"
+    ],
+    proTip: "Early internal review catches errors and strengthens the proposal's argument."
+  },
+  { id: "draft-proposal-w6", label: "Draft Proposal", line: "piccadilly", week: 6, yOffset: 0, critical: false,
+    owner: "PI", overview: "Develop the first comprehensive draft of the research proposal.",
+    checklist: [
+      "Outline research questions and methodology",
+      "Draft aims, objectives, and impact statement",
+      "Start writing key sections of the proposal"
+    ],
+    proTip: "Focus on clarity and persuasiveness in your initial draft."
+  },
+
+  // Week 5
+  { id: "case-for-support", label: "Case for Support", line: "piccadilly", week: 5, yOffset: 0, critical: true,
+    owner: "PI", overview: "Develop a compelling narrative for the project's importance and feasibility.",
+    checklist: [
+      "Articulate the problem and proposed solution",
+      "Justify the chosen methodology",
+      "Highlight LSBU's capability and unique selling points"
+    ],
+    proTip: "The 'Case for Support' is your opportunity to sell the project; make it impactful."
+  },
+  { id: "draft-costs", label: "Draft Costs", line: "metropolitan", week: 5, yOffset: 0, critical: true,
+    owner: "Finance Team, PI", overview: "Refine budget details and costings.",
+    checklist: [
+      "Review initial budget estimates against proposal",
+      "Obtain quotes for equipment/services",
+      "Finalise staff costs and overheads"
+    ],
+    proTip: "Accuracy in costing prevents budget overruns and ensures full project funding."
+  },
+  { id: "due-diligence-w5", label: "Due Diligence+", line: "district", week: 5, yOffset: 0, critical: false,
+    owner: "Partnerships Team", overview: "Advanced due diligence, addressing any red flags.",
+    checklist: [
+      "Follow up on outstanding partner information",
+      "Conduct deeper financial checks if required",
+      "Formalise collaboration agreements (MOU/CA)"
+    ],
+    proTip: "Resolve any partnership concerns proactively to avoid last-minute issues."
+  },
+
+  // Week 4
+  { id: "finalise-costs", label: "Finalise Costs", line: "central", week: 4, yOffset: 70, critical: true,
+    owner: "Finance Team", overview: "Complete all financial sections and obtain final sign-off.",
+    checklist: [
+      "Input final budget into HAPLO/funder system",
+      "Secure Head of Department financial approval",
+      "Ensure budget aligns with funder guidelines"
+    ],
+    proTip: "This is a critical checkpoint; inaccuracies here can derail the entire application."
+  },
+  { id: "tech-requirements", label: "Tech Support", line: "northern", week: 4, yOffset: 0, critical: false,
+    owner: "IT Support, PI", overview: "Identify and arrange for any specific IT or technical support needed.",
+    checklist: [
+      "Assess software, hardware, and data storage needs",
+      "Liaise with IT for specialist support",
+      "Ensure technical infrastructure is compliant and secure"
+    ],
+    proTip: "Anticipate technical needs early to prevent project delays."
+  },
+  { id: "draft-proposal-w4", label: "Refine Proposal", line: "metropolitan", week: 4, yOffset: 0, critical: false,
+    owner: "PI", overview: "Refine proposal based on internal reviews and updated information.",
+    checklist: [
+      "Integrate feedback from all reviewers",
+      "Check for coherence, flow, and clarity",
+      "Ensure all funder requirements are addressed"
+    ],
+    proTip: "Iterative drafting is key to a polished and competitive proposal."
+  },
+  { id: "review-period-jubilee", label: "Review Period", line: "jubilee", week: 4, yOffset: 0, critical: false,
+    owner: "Research Support", overview: "Final review of all documentation and system entries.",
+    checklist: [
+      "Cross-check all uploaded documents",
+      "Verify metadata and ethical declarations",
+      "Ensure consistency across all application parts"
+    ],
+    proTip: "A thorough review catches last-minute inconsistencies."
+  },
+
+  // Week 3
+  { id: "financial-approval", label: "Financial Approval", line: "piccadilly", week: 3, yOffset: 0, critical: true,
+    owner: "Head of Department, Finance", overview: "Obtain formal financial approval for the project.",
+    checklist: [
+      "Submit final costings for HoD approval",
+      "Address any financial queries from approvers",
+      "Receive formal sign-off from finance"
+    ],
+    proTip: "Financial approval is a gatekeeper; ensure all documentation is flawless."
+  },
+  { id: "pre-submission", label: "Pre-submission Check", line: "district", week: 3, yOffset: 0, critical: false,
+    owner: "Research Support", overview: "Final checks before submission to ensure all prerequisites are met.",
+    checklist: [
+      "Confirm all internal approvals are secured",
+      "Run final compliance checks",
+      "Prepare the application for funder portal upload"
+    ],
+    proTip: "This final internal review prevents common rejection reasons."
+  },
+
+  // Week 2
+  { id: "ethics-approval", label: "Ethics Approval", line: "northern", week: 2, yOffset: 0, critical: true,
+    owner: "Ethics Committee, PI", overview: "Secure full ethical approval for the research project.",
+    checklist: [
+      "Submit ethics application (if not already done)",
+      "Respond to any committee queries promptly",
+      "Obtain final ethics committee sign-off"
+    ],
+    proTip: "Ethical approval can be time-consuming; start this process well in advance."
+  },
+  { id: "final-approvals-central", label: "Final Approvals", line: "central", week: 2, yOffset: 0, critical: true,
+    owner: "Dean, Pro-Vice Chancellor (Research)", overview: "Obtain final institutional approval from senior leadership.",
+    checklist: [
+      "Submit complete application for institutional approval",
+      "Address any final high-level queries",
+      "Receive formal institutional endorsement"
+    ],
+    proTip: "These are the ultimate gatekeepers; ensure the proposal aligns with strategic priorities."
+  },
+  { id: "final-approvals-district", label: "Final Sign-offs", line: "district", week: 2, yOffset: -40, critical: true,
+    owner: "Research Support", overview: "Consolidate all final approvals and prepare for external submission.",
+    checklist: [
+      "Verify all internal sign-offs are in place",
+      "Perform a final check of the entire application package",
+      "Confirm readiness for submission portal"
+    ],
+    proTip: "One last comprehensive check prevents last-minute panic and errors."
+  },
+  { id: "mock-interview", label: "Mock Interview", line: "jubilee", week: 2, yOffset: -30, critical: false,
+    owner: "Research Support, PI", overview: "Practice for potential funder interviews.",
+    checklist: [
+      "Prepare presentation materials",
+      "Conduct mock interview with critical feedback",
+      "Refine answers and presentation style"
+    ],
+    proTip: "Preparation for interviews significantly increases success rates."
+  },
+  { id: "peer-review", label: "Peer Review", line: "metropolitan", week: 2, yOffset: -30, critical: false,
+    owner: "PI, External Peer Reviewers", overview: "External peer review of the proposal.",
+    checklist: [
+      "Identify appropriate external reviewers",
+      "Provide reviewers with proposal and clear instructions",
+      "Incorporate feedback to strengthen the proposal"
+    ],
+    proTip: "Objective external feedback is invaluable for refining the proposal's quality."
+  },
+
+  // Week 1
+  { id: "submission", label: "SUBMISSION", line: "central", week: 1, yOffset: 0, critical: true,
+    owner: "Research Support", overview: "Final submission of the grant application to the funder.",
+    checklist: [
+      "Upload all final documents to funder portal",
+      "Complete all online forms",
+      "Hit the 'Submit' button by the deadline!"
+    ],
+    proTip: "Double-check everything one last time before hitting submit. There's no undo!"
+  },
+  { id: "partner-sign-offs", label: "Partner Letters", line: "district", week: 1, yOffset: 0, critical: true,
+    owner: "Partnerships Team, PI", overview: "Collect all necessary partner sign-off documents.",
+    checklist: [
+      "Obtain formal letters of support from partners",
+      "Secure legally binding partner agreements",
+      "Ensure partner documentation is funder-compliant"
+    ],
+    proTip: "Delays in partner sign-offs are a common cause of last-minute stress. Chase early!"
+  }
+];
+
+/* ==================== STATE ==================== */
+let currentWeek = 8;
+let coreOnlyMode = false;
+let criticalOnlyMode = false;
+let selectedStationId = "initial-contact";
+
+/* ==================== UTILITY FUNCTIONS ==================== */
+function getLineById(id) {
+  return lines.find(l => l.id === id);
+}
+
+function calculateStationPosition(station) {
+  const line = getLineById(station.line);
+  const x = CONFIG.SVG.START_X + (8 - station.week) * CONFIG.SVG.WEEK_SPACING;
+  const y = line.yBase + (station.yOffset || 0);
+  return { x, y };
+}
+
+function isStationVisible(station) {
+  if (station.week > currentWeek) return false;
+  if (criticalOnlyMode && !station.critical) return false;
+  return true;
+}
+
+function isLineVisible(lineId) {
+  if (!coreOnlyMode) return true;
+  return lineId === 'central';
+}
+
+/* ==================== SVG RENDERING ==================== */
+function renderMap() {
+  const svg = document.getElementById('grant-map');
+  svg.innerHTML = '';
+
+  // Add week markers
+  renderWeekMarkers(svg);
+
+  // Render lines
+  lines.forEach(line => {
+    renderLine(svg, line);
+  });
+
+  // Render stations
+  stations.forEach(station => {
+    if (isStationVisible(station)) {
+      renderStation(svg, station);
+    }
+  });
+
+  // Update legend
+  renderLegend();
+}
+
+function renderWeekMarkers(svg) {
+  for (let week = 8; week >= 1; week--) {
+    if (week > currentWeek) continue;
+
+    const x = CONFIG.SVG.START_X + (8 - week) * CONFIG.SVG.WEEK_SPACING;
+    const text = createSVGElement('text', {
+      x: x,
+      y: 30,
+      'class': 'week-marker',
+      'text-anchor': 'middle'
+    });
+    text.textContent = `Week ${week}`;
+    svg.appendChild(text);
+  }
+}
+
+function renderLine(svg, line) {
+  const visibleStations = stations.filter(s =>
+    s.line === line.id && isStationVisible(s)
+  ).sort((a, b) => b.week - a.week);
+
+  if (visibleStations.length < 2) return;
+
+  const path = createSVGElement('path', {
+    'class': 'line-path',
+    'stroke': line.color,
+    'stroke-width': isLineVisible(line.id) ? CONFIG.SVG.LINE_WIDTH : CONFIG.SVG.LINE_WIDTH * 0.7,
+    'opacity': isLineVisible(line.id) ? 1 : 0.25
+  });
+
+  let d = '';
+  visibleStations.forEach((station, i) => {
+    const pos = calculateStationPosition(station);
+    d += (i === 0 ? 'M' : 'L') + pos.x + ',' + pos.y + ' ';
+  });
+
+  path.setAttribute('d', d.trim());
+  svg.appendChild(path);
+}
+
+function renderStation(svg, station) {
+  const pos = calculateStationPosition(station);
+  const line = getLineById(station.line);
+
+  const group = createSVGElement('g', {
+    'class': 'station-group' + (selectedStationId === station.id ? ' selected' : ''),
+    'data-station-id': station.id,
+    'tabindex': '0',
+    'role': 'button',
+    'aria-label': `${station.label}, Week ${station.week}, ${line.name}`
+  });
+
+  // Outer white circle (for visibility)
+  const outerCircle = createSVGElement('circle', {
+    'cx': pos.x,
+    'cy': pos.y,
+    'r': CONFIG.SVG.STATION_RADIUS + 1,
+    'fill': 'white'
+  });
+  group.appendChild(outerCircle);
+
+  // Main station circle
+  const circle = createSVGElement('circle', {
+    'class': 'station-circle',
+    'cx': pos.x,
+    'cy': pos.y,
+    'r': CONFIG.SVG.STATION_RADIUS,
+    'fill': 'white',
+    'stroke': line.color,
+    'stroke-width': selectedStationId === station.id ? 3 : CONFIG.SVG.STATION_STROKE
+  });
+  group.appendChild(circle);
+
+  // Critical indicator
+  if (station.critical) {
+    const criticalDot = createSVGElement('circle', {
+      'class': 'critical-indicator',
+      'cx': pos.x + 8,
+      'cy': pos.y - 8,
+      'r': 3
+    });
+    group.appendChild(criticalDot);
+  }
+
+  // Label
+  const label = createSVGElement('text', {
+    'class': 'station-label',
+    'x': pos.x,
+    'y': pos.y + 18,
+    'text-anchor': 'middle'
+  });
+  label.textContent = station.label;
+  group.appendChild(label);
+
+  // Event listeners
+  group.addEventListener('click', () => selectStation(station.id));
+  group.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      selectStation(station.id);
+    }
+  });
+
+  svg.appendChild(group);
+}
+
+function renderLegend() {
+  const legend = document.getElementById('legend');
+  legend.innerHTML = '';
+
+  lines.forEach(line => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.setAttribute('role', 'listitem');
+
+    const swatch = document.createElement('div');
+    swatch.className = 'legend-swatch';
+    swatch.style.backgroundColor = line.color;
+
+    const text = document.createElement('span');
+    text.textContent = line.name;
+
+    item.appendChild(swatch);
+    item.appendChild(text);
+    legend.appendChild(item);
+  });
+}
+
+function createSVGElement(tag, attrs = {}) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  Object.entries(attrs).forEach(([key, value]) => {
+    el.setAttribute(key, value);
+  });
+  return el;
+}
+
+/* ==================== DETAIL PANEL ==================== */
+function selectStation(stationId) {
+  selectedStationId = stationId;
+  const station = stations.find(s => s.id === stationId);
+  if (!station) return;
+
+  updateDetailPanel(station);
+
+  // Update selection in SVG
+  document.querySelectorAll('.station-group').forEach(g => {
+    g.classList.toggle('selected', g.dataset.stationId === stationId);
+    const circle = g.querySelector('.station-circle');
+    if (circle) {
+      circle.setAttribute('stroke-width', g.dataset.stationId === stationId ? '3' : '2');
+    }
+  });
+}
+
+function updateDetailPanel(station) {
+  const title = document.querySelector('#detail-panel h2');
+  const meta = document.getElementById('detail-meta');
+  const body = document.getElementById('detail-body');
+
+  title.textContent = station.label;
+  meta.textContent = `Week ${station.week} • Owner: ${station.owner}`;
+
+  let html = `<p><strong>Overview:</strong> ${station.overview}</p>`;
+
+  if (station.checklist && station.checklist.length > 0) {
+    html += '<p class="detail-section-title">Key Actions:</p><ul>';
+    station.checklist.forEach(item => {
+      html += `<li>${item}</li>`;
+    });
+    html += '</ul>';
+  }
+
+  if (station.proTip) {
+    html += `<div class="pro-tip"><strong>Pro Tip:</strong> ${station.proTip}</div>`;
+  }
+
+  body.innerHTML = html;
+}
+
+/* ==================== EVENT HANDLERS ==================== */
+function handleWeekChange(week) {
+  currentWeek = parseInt(week);
+  const label = document.getElementById('week-label');
+  const range = document.getElementById('week-range');
+
+  label.textContent = `Week ${currentWeek} of 8`;
+  range.setAttribute('aria-valuenow', currentWeek);
+  range.setAttribute('aria-valuetext', `Week ${currentWeek} of 8`);
+
+  // Ensure selected station is visible
+  const selectedStation = stations.find(s => s.id === selectedStationId);
+  if (selectedStation && selectedStation.week > currentWeek) {
+    // Find the last visible station
+    const visibleStations = stations.filter(s => s.week <= currentWeek);
+    if (visibleStations.length > 0) {
+      selectStation(visibleStations[visibleStations.length - 1].id);
+    }
+  }
+
+  renderMap();
+}
+
+function handleCoreOnlyToggle(checked) {
+  coreOnlyMode = checked;
+  renderMap();
+}
+
+function handleCriticalOnlyToggle(checked) {
+  criticalOnlyMode = checked;
+  renderMap();
+}
+
+/* ==================== INITIALIZATION ==================== */
+function init() {
+  // Set up event listeners
+  const weekRange = document.getElementById('week-range');
+  const coreToggle = document.getElementById('core-only-toggle');
+  const criticalToggle = document.getElementById('critical-only-toggle');
+
+  weekRange.addEventListener('input', (e) => handleWeekChange(e.target.value));
+  coreToggle.addEventListener('change', (e) => handleCoreOnlyToggle(e.target.checked));
+  criticalToggle.addEventListener('change', (e) => handleCriticalOnlyToggle(e.target.checked));
+
+  // Initial render
+  renderMap();
+  selectStation(selectedStationId);
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      weekRange.value = Math.min(8, parseInt(weekRange.value) + 1);
+      handleWeekChange(weekRange.value);
+    } else if (e.key === 'ArrowRight') {
+      weekRange.value = Math.max(1, parseInt(weekRange.value) - 1);
+      handleWeekChange(weekRange.value);
+    }
+  });
+
+  console.log('✅ LSBU Grant Journey Map initialized');
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
